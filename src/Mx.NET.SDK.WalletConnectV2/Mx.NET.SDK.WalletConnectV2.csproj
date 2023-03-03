@@ -1,20 +1,20 @@
 ﻿<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
-    <Description>⚡ MultiversX .NET SDK: Unique library for interacting with Wallet Connect</Description>
-    <TargetFrameworks>net5.0;net6.0;net7.0</TargetFrameworks>
+    <Description>⚡ MultiversX .NET SDK: Unique library for interacting with Wallet Connect V2</Description>
+    <TargetFrameworks>net6.0</TargetFrameworks>
     <GeneratePackageOnBuild>true</GeneratePackageOnBuild>
-    <PackageId>RemarkableTools.Mx.WalletConnect</PackageId>
+    <PackageId>RemarkableTools.Mx.WalletConnectV2</PackageId>
     <Authors>Remarkable Tools</Authors>
     <Product />
-    <PackageTags>RemarkableTools;MultiversX;MxDotNet;WalletConnect</PackageTags>
+    <PackageTags>RemarkableTools;MultiversX;MxDotNet;WalletConnectV2</PackageTags>
     <PackageProjectUrl></PackageProjectUrl>
-    <RepositoryUrl>https://github.com/RemarkableTools/Mx.NET.SDK.WalletProviders/tree/main/src/Mx.NET.SDK.WalletConnect</RepositoryUrl>
+    <RepositoryUrl>https://github.com/RemarkableTools/Mx.NET.SDK.WalletProviders/tree/main/src/Mx.NET.SDK.WalletConnectV2</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <Company>Remarkable Tools</Company>
     <Version>1.0.0</Version>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <RootNamespace>$(MSBuildProjectName.Replace("-", ""))</RootNamespace>
-    <Title>RemarkableTools.Mx.WalletConnect</Title>
+    <Title>RemarkableTools.Mx.WalletConnectV2</Title>
     <Copyright>Copyright © Remarkable Tools 2022</Copyright>
     <PackageIcon>RemarkableToolsPackage.jpg</PackageIcon>
     <PackageReadmeFile>README.md</PackageReadmeFile>
@@ -45,8 +45,8 @@
   <ItemGroup>
     <PackageReference Include="RemarkableTools.Mx" Version="1.0.10" />
     <PackageReference Include="RemarkableTools.Mx.Core" Version="1.0.3" />
-    <PackageReference Include="WalletConnect.Core" Version="1.7.1" />
-    <PackageReference Include="WalletConnect.Desktop" Version="1.7.1" />
+    <PackageReference Include="RemarkableTools.Mx.Wallet" Version="1.0.0" />
+    <PackageReference Include="WalletConnect.Sign" Version="2.0.3" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
