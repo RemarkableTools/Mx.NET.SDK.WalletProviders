@@ -11,6 +11,10 @@ using Mx.NET.SDK.Provider.Dtos.API.Transactions;
 using Mx.NET.SDK.WalletConnectV2.Helper;
 using Mx.NET.SDK.Domain;
 using System.Collections.Generic;
+using WalletConnectSharp.Events;
+using WalletConnectSharp.Events.Model;
+using Mx.NET.SDK.WalletConnectV2.Models.Events;
+using static Mx.NET.SDK.WalletConnectV2.Constants.Events;
 
 namespace Mx.NET.SDK.WalletConnectV2
 {
@@ -23,18 +27,18 @@ namespace Mx.NET.SDK.WalletConnectV2
         public const string MAIAR_BRIDGE_URL = "https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=https://maiar.com/";
         public const string PROJECT_ID = "c7d3aa2b21836c991357e8a56c252962";
 
-        private SignClientOptions _dappOptions { get; set; } = default!;
-        private ConnectOptions _dappConnectOptions { get; set; } = default!;
-        private ConnectedData _walletConnectV2 { get; set; } = default!;
-        private SessionStruct _walletConnectV2Session { get; set; } = default!;
-        private WalletConnectSignClient _client { get; set; } = default!;
+        private SignClientOptions _dappOptions = default!;
+        private ConnectOptions _dappConnectOptions = default!;
+        private ConnectedData _walletConnectV2 = default!;
+        private SessionStruct _walletConnectV2Session = default!;
+        private WalletConnectSignClient _client = default!;
+        private EventDelegator _events = default!;
 
-        private string _authToken { get; set; }
-        public string ChainID { get; set; }
+        private string _authToken;
         public string Address { get; private set; }
         public string Signature { get; private set; }
         public string URI { get => $"{_walletConnectV2.Uri}&token={_authToken}"; }
-        public Uri WalletConnectUri { get => new Uri($"{MAIAR_BRIDGE_URL}?wallet-connect={Uri.EscapeDataString(URI)}"); }
+        public Uri WalletConnectUri { get => new($"{MAIAR_BRIDGE_URL}?wallet-connect={Uri.EscapeDataString(URI)}"); }
 
         public WalletConnectV2(Metadata metadata, string chainID, string authToken)
         {
@@ -45,7 +49,7 @@ namespace Mx.NET.SDK.WalletConnectV2
                 Metadata = metadata
             };
 
-            ChainID = $"{WALLETCONNECT_MULTIVERSX_NAMESPACE}:{chainID}";
+            var chain = $"{WALLETCONNECT_MULTIVERSX_NAMESPACE}:{chainID}";
             _dappConnectOptions = new ConnectOptions()
             {
                 RequiredNamespaces = new RequiredNamespaces()
@@ -63,7 +67,7 @@ namespace Mx.NET.SDK.WalletConnectV2
                             },
                             Chains = new[]
                             {
-                                ChainID
+                                chain
                             },
                             Events = Array.Empty<string>()
                         }
@@ -76,6 +80,7 @@ namespace Mx.NET.SDK.WalletConnectV2
         {
             _client = await WalletConnectSignClient.Init(_dappOptions);
             _walletConnectV2 = await _client.Connect(_dappConnectOptions);
+            SubscribeToEvents();
         }
 
         public async Task Connect()
@@ -115,7 +120,7 @@ namespace Mx.NET.SDK.WalletConnectV2
 
             try
             {
-                var response = await _client.Request<SignTransactionRequest, SignTransactionResponse>(_walletConnectV2Session.Topic, request, ChainID);
+                var response = await _client.Request<SignTransactionRequest, SignTransactionResponse>(_walletConnectV2Session.Topic, request);
                 var transaction = transactionRequest.ToDto();
                 transaction.Signature = response.Signature;
                 return transaction;
@@ -129,7 +134,7 @@ namespace Mx.NET.SDK.WalletConnectV2
 
             try
             {
-                var response = await _client.Request<SignTransactionsRequest, SignTransactionsResponse>(_walletConnectV2Session.Topic, request, ChainID);
+                var response = await _client.Request<SignTransactionsRequest, SignTransactionsResponse>(_walletConnectV2Session.Topic, request);
 
                 var transactions = new List<TransactionRequestDto>();
                 for (var i = 0; i < response.Signatures.Length; i++)
@@ -144,29 +149,44 @@ namespace Mx.NET.SDK.WalletConnectV2
             catch (Exception) { throw; }
         }
 
-        //public event EventHandler<WalletConnectSession> OnSessionConnected;
-        //public event EventHandler OnSessionDisconnected;
+        public event EventHandler OnSessionConnectEvent;
+        public event EventHandler<GenericEvent<SessionUpdateEvent>> OnSessionUpdateEvent;
+        public event EventHandler<GenericEvent<SessionEvent>> OnSessionEvent;
+        public event EventHandler OnSessionDeleteEvent;
+        public event EventHandler OnSessionExpireEvent;
+        public event EventHandler<GenericEvent<TopicUpdateEvent>> OnTopicUpdateEvent;
 
-        //public WalletConnectV2(ClientMeta clientMeta, string bridgeUrl = BRIDGE_URL)
-        //{
-        //    _walletConnect = new WcWalletConnect(clientMeta, bridgeUrl, null, null, WALLETCONNECT_MULTIVERSX_CHAIN_ID);
-        //    _walletConnect.OnSessionConnect += OnSessionConnectEvent;
-        //    _walletConnect.OnSessionDisconnect += OnSessionDisconnectEvent;
-        //}
+        private void SubscribeToEvents()
+        {
+            _client.On(SESSION_UPDATE, delegate (object sender, GenericEvent<SessionUpdateEvent> @event)
+            {
+                OnSessionUpdateEvent?.Invoke(sender, @event);
+            });
 
-        //public void OnSessionConnectEvent(object sender, WalletConnectSession session)
-        //{
-        //    OnSessionConnected?.Invoke(this, session);
-        //}
+            _client.On(SESSION_EVENT, delegate (object sender, GenericEvent<SessionEvent> @event)
+            {
+                OnSessionEvent?.Invoke(sender, @event);
+            });
 
-        //public void OnSessionDisconnectEvent(object sender, EventArgs e)
-        //{
-        //    OnSessionDisconnected?.Invoke(this, EventArgs.Empty);
-        //}
+            _client.On(SESSION_DELETE, delegate ()
+            {
+                OnSessionDeleteEvent?.Invoke(this, EventArgs.Empty);
+            });
 
-        //public bool IsConnected()
-        //{
-        //    return !string.IsNullOrEmpty(Address);
-        //}
+            _client.On(SESSION_EXPIRE, delegate ()
+            {
+                OnSessionDeleteEvent?.Invoke(this, EventArgs.Empty);
+            });
+
+            _client.Core.Pairing.On(PAIRING_DELETE, delegate (object sender, GenericEvent<TopicUpdateEvent> @event)
+            {
+                OnTopicUpdateEvent?.Invoke(sender, @event);
+            });
+
+            _client.Core.Pairing.On(PAIRING_EXPIRE, delegate (object sender, GenericEvent<TopicUpdateEvent> @event)
+            {
+                OnTopicUpdateEvent?.Invoke(sender, @event);
+            });
+        }
     }
 }

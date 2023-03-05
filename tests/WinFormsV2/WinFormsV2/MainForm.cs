@@ -6,10 +6,12 @@ using Mx.NET.SDK.Provider;
 using Mx.NET.SDK.TransactionsManager;
 using Mx.NET.SDK.WalletConnectV2;
 using Mx.NET.SDK.WalletConnectV2.Helper;
+using Mx.NET.SDK.WalletConnectV2.Models.Events;
 using Mx.NET.SDK.WalletConnectV2.Services;
 using QRCoder;
 using System.Diagnostics;
 using WalletConnectSharp.Core.Models.Pairing;
+using WalletConnectSharp.Events.Model;
 using Address = Mx.NET.SDK.Core.Domain.Values.Address;
 
 namespace WinForms
@@ -39,15 +41,25 @@ namespace WinForms
             tbConnectionStatus.Text = message;
         }
 
-        //private void OnSessionConnectEvent(object sender, WalletConnectSession session)
-        //{
-        //    LogMessage("Wallet connected", Color.ForestGreen);
-        //}
+        private void OnSessionUpdateEvent(object? sender, GenericEvent<SessionUpdateEvent> @event)
+        {
+            LogMessage("Wallet connected", Color.ForestGreen);
+        }
 
-        //private void OnSessionDisconnectEvent(object sender, EventArgs e)
-        //{
-        //    LogMessage("Wallet disconnected", Color.Firebrick);
-        //}
+        private void OnSessionEvent(object? sender, GenericEvent<SessionEvent> @event)
+        {
+            Debug.WriteLine("Session Event");
+        }
+
+        private void OnSessionDeleteEvent(object? sender, EventArgs e)
+        {
+            LogMessage("Wallet disconnected", Color.Firebrick);
+        }
+
+        private void OnTopicUpdateEvent(object? sender, GenericEvent<TopicUpdateEvent> @event)
+        {
+            Debug.WriteLine("Topic Update Event");
+        }
 
         private async void BtnConnect_Click(object sender, EventArgs e)
         {
@@ -59,12 +71,15 @@ namespace WinForms
                 Url = "https://remarkable.tools/"
             };
 
-            //IWalletConnect.OnSessionConnected += OnSessionConnectEvent;
-            //IWalletConnect.OnSessionDisconnected += OnSessionDisconnectEvent;
-
             var authToken = GenerateAuthToken.Random();
             WalletConnectV2 = new WalletConnectV2(metadata, ChainID, authToken);
             await WalletConnectV2.Initialize();
+
+            WalletConnectV2.OnSessionUpdateEvent += OnSessionUpdateEvent;
+            WalletConnectV2.OnSessionEvent += OnSessionEvent;
+            WalletConnectV2.OnSessionDeleteEvent += OnSessionDeleteEvent;
+            WalletConnectV2.OnSessionExpireEvent += OnSessionDeleteEvent;
+            WalletConnectV2.OnTopicUpdateEvent += OnTopicUpdateEvent;
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
             QRCodeData qrCodeData = qrGenerator.CreateQrCode(WalletConnectV2.URI, QRCodeGenerator.ECCLevel.Q);

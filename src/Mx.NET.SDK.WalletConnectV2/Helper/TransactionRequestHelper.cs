@@ -21,7 +21,7 @@ namespace Mx.NET.SDK.WalletConnectV2.Helper
                 Sender = transaction.Sender.Bech32,
                 Signature = null,
                 Value = transaction.Value.ToString(),
-                Version = 1
+                Version = transaction.Version
             };
         }
 
@@ -39,7 +39,7 @@ namespace Mx.NET.SDK.WalletConnectV2.Helper
                     sender = transaction.Sender.Bech32,
                     receiver = transaction.Receiver.Bech32,
                     value = transaction.Value.ToString(),
-                    version = 1
+                    version = transaction.Version
                 }
             };
         }
@@ -58,7 +58,7 @@ namespace Mx.NET.SDK.WalletConnectV2.Helper
                     sender = transaction.Sender.Bech32,
                     receiver = transaction.Receiver.Bech32,
                     value = transaction.Value.ToString(),
-                    version = 1
+                    version = transaction.Version
                 }).ToArray()
             };
         }
