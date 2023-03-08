@@ -33,13 +33,13 @@
             this.btnSend = new System.Windows.Forms.Button();
             this.btnDisconnect = new System.Windows.Forms.Button();
             this.btnConnect = new System.Windows.Forms.Button();
-            this.pictureBox1 = new System.Windows.Forms.PictureBox();
+            this.qrCodeImg = new System.Windows.Forms.PictureBox();
             this.tbReceiver = new System.Windows.Forms.TextBox();
             this.label1 = new System.Windows.Forms.Label();
             this.label2 = new System.Windows.Forms.Label();
             this.tbEGLD = new System.Windows.Forms.TextBox();
             this.tbConnectionStatus = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.qrCodeImg)).BeginInit();
             this.SuspendLayout();
             // 
             // btnSendMultiple
@@ -67,12 +67,13 @@
             // btnDisconnect
             // 
             this.btnDisconnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDisconnect.Location = new System.Drawing.Point(154, 513);
+            this.btnDisconnect.Location = new System.Drawing.Point(26, 513);
             this.btnDisconnect.Name = "btnDisconnect";
             this.btnDisconnect.Size = new System.Drawing.Size(99, 39);
-            this.btnDisconnect.TabIndex = 7;
+            this.btnDisconnect.TabIndex = 4;
             this.btnDisconnect.Text = "Disconnect";
             this.btnDisconnect.UseVisualStyleBackColor = true;
+            this.btnDisconnect.Visible = false;
             this.btnDisconnect.Click += new System.EventHandler(this.BtnDisconnect_Click);
             // 
             // btnConnect
@@ -81,19 +82,19 @@
             this.btnConnect.Location = new System.Drawing.Point(26, 513);
             this.btnConnect.Name = "btnConnect";
             this.btnConnect.Size = new System.Drawing.Size(99, 39);
-            this.btnConnect.TabIndex = 6;
+            this.btnConnect.TabIndex = 3;
             this.btnConnect.Text = "Connect";
             this.btnConnect.UseVisualStyleBackColor = true;
             this.btnConnect.Click += new System.EventHandler(this.BtnConnect_Click);
             // 
-            // pictureBox1
+            // qrCodeImg
             // 
-            this.pictureBox1.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.pictureBox1.Location = new System.Drawing.Point(26, 27);
-            this.pictureBox1.Name = "pictureBox1";
-            this.pictureBox1.Size = new System.Drawing.Size(593, 446);
-            this.pictureBox1.TabIndex = 5;
-            this.pictureBox1.TabStop = false;
+            this.qrCodeImg.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
+            this.qrCodeImg.Location = new System.Drawing.Point(26, 27);
+            this.qrCodeImg.Name = "qrCodeImg";
+            this.qrCodeImg.Size = new System.Drawing.Size(593, 446);
+            this.qrCodeImg.TabIndex = 5;
+            this.qrCodeImg.TabStop = false;
             // 
             // tbReceiver
             // 
@@ -101,7 +102,7 @@
             this.tbReceiver.Location = new System.Drawing.Point(97, 610);
             this.tbReceiver.Name = "tbReceiver";
             this.tbReceiver.Size = new System.Drawing.Size(522, 27);
-            this.tbReceiver.TabIndex = 10;
+            this.tbReceiver.TabIndex = 0;
             // 
             // label1
             // 
@@ -110,7 +111,7 @@
             this.label1.Location = new System.Drawing.Point(26, 613);
             this.label1.Name = "label1";
             this.label1.Size = new System.Drawing.Size(65, 20);
-            this.label1.TabIndex = 11;
+            this.label1.TabIndex = 0;
             this.label1.Text = "Receiver";
             // 
             // label2
@@ -129,7 +130,7 @@
             this.tbEGLD.Location = new System.Drawing.Point(97, 652);
             this.tbEGLD.Name = "tbEGLD";
             this.tbEGLD.Size = new System.Drawing.Size(88, 27);
-            this.tbEGLD.TabIndex = 12;
+            this.tbEGLD.TabIndex = 1;
             // 
             // tbConnectionStatus
             // 
@@ -153,16 +154,17 @@
             this.Controls.Add(this.tbReceiver);
             this.Controls.Add(this.btnSendMultiple);
             this.Controls.Add(this.btnSend);
-            this.Controls.Add(this.btnDisconnect);
+            this.Controls.Add(this.qrCodeImg);
             this.Controls.Add(this.btnConnect);
-            this.Controls.Add(this.pictureBox1);
+            this.Controls.Add(this.btnDisconnect);
             this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "MainForm";
             this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
             this.Text = "Wallet Connect - Example";
+            this.Load += new System.EventHandler(this.MainForm_Load);
             this.Shown += new System.EventHandler(this.MainForm_Shown);
-            ((System.ComponentModel.ISupportInitialize)(this.pictureBox1)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.qrCodeImg)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -174,7 +176,7 @@
         private Button btnSend;
         private Button btnDisconnect;
         private Button btnConnect;
-        private PictureBox pictureBox1;
+        private PictureBox qrCodeImg;
         private TextBox tbReceiver;
         private Label label1;
         private Label label2;

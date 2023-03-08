@@ -20,9 +20,11 @@ namespace Mx.NET.SDK.WalletConnectV2
         event EventHandler OnSessionExpireEvent;
         event EventHandler<GenericEvent<TopicUpdateEvent>> OnTopicUpdateEvent;
 
+        Task<bool> GetConnection();
+
         Task Initialize();
 
-        Task Connect();
+        Task Connect(bool newConnection = true);
 
         Task Disconnect();
 

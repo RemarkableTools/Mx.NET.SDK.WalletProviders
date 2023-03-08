@@ -15,6 +15,10 @@ using WalletConnectSharp.Events;
 using WalletConnectSharp.Events.Model;
 using Mx.NET.SDK.WalletConnectV2.Models.Events;
 using static Mx.NET.SDK.WalletConnectV2.Constants.Events;
+using Mx.NET.SDK.WalletConnectV2.Services;
+using System.Diagnostics;
+using System.IO;
+using WalletConnectSharp.Storage;
 
 namespace Mx.NET.SDK.WalletConnectV2
 {
@@ -32,7 +36,6 @@ namespace Mx.NET.SDK.WalletConnectV2
         private ConnectedData _walletConnectV2 = default!;
         private SessionStruct _walletConnectV2Session = default!;
         private WalletConnectSignClient _client = default!;
-        private EventDelegator _events = default!;
 
         private string _authToken;
         public string Address { get; private set; }
@@ -40,13 +43,14 @@ namespace Mx.NET.SDK.WalletConnectV2
         public string URI { get => $"{_walletConnectV2.Uri}&token={_authToken}"; }
         public Uri WalletConnectUri { get => new($"{MAIAR_BRIDGE_URL}?wallet-connect={Uri.EscapeDataString(URI)}"); }
 
-        public WalletConnectV2(Metadata metadata, string chainID, string authToken)
+        public WalletConnectV2(Metadata metadata, string chainID)
         {
-            _authToken = authToken;
+            var dappFilePath = Path.Combine(Environment.GetFolderPath(Environment.SpecialFolder.UserProfile), ".wc", "win_forms_v2.json");
             _dappOptions = new SignClientOptions()
             {
                 ProjectId = PROJECT_ID,
-                Metadata = metadata
+                Metadata = metadata,
+                Storage = new FileSystemStorage(dappFilePath)
             };
 
             var chain = $"{WALLETCONNECT_MULTIVERSX_NAMESPACE}:{chainID}";
@@ -76,16 +80,36 @@ namespace Mx.NET.SDK.WalletConnectV2
             };
         }
 
-        public async Task Initialize()
+        public async Task<bool> GetConnection()
         {
             _client = await WalletConnectSignClient.Init(_dappOptions);
-            _walletConnectV2 = await _client.Connect(_dappConnectOptions);
             SubscribeToEvents();
+
+            if (_client.Find(_dappConnectOptions.RequiredNamespaces).Length > 0)
+            {
+                await Connect(false);
+                return true;
+            }
+            return false;
         }
 
-        public async Task Connect()
+        public async Task Initialize()
         {
-            _walletConnectV2Session = await _walletConnectV2.Approval;
+            _walletConnectV2 = await _client.Connect(_dappConnectOptions);
+        }
+
+        public async Task Connect(bool newConnection = true)
+        {
+            if (newConnection)
+            {
+                _walletConnectV2Session = await _walletConnectV2.Approval;
+                _authToken = GenerateAuthToken.Random();
+            }
+            else
+            {
+                _walletConnectV2Session = _client.Find(_dappConnectOptions.RequiredNamespaces)[0];
+            }
+
             var selectedNamespace = _walletConnectV2Session.Namespaces[WALLETCONNECT_MULTIVERSX_NAMESPACE];
             if (selectedNamespace != null && selectedNamespace.Accounts.Length > 0)
             {
@@ -94,15 +118,17 @@ namespace Mx.NET.SDK.WalletConnectV2
                 Address = parameters[2];
             }
 
-            //try
+            //if (newConnection)
             //{
             //    var request = new LoginRequest(_authToken, Address);
-            //    var response = await _client.Request<LoginRequest, LoginResponse>(_walletConnectV2Session.Topic, request, ChainID);
+            //    var response = await _client.Request<LoginRequest, LoginResponse>(_walletConnectV2Session.Topic, request);
             //    Signature = response.Signature;
-            //}
-            //catch (Exception ex)
-            //{
-            //    Debug.WriteLine(ex);
+
+            //    if (!SignatureVerifier.Verify(Address, Signature, _authToken))
+            //    {
+            //        await Disconnect();
+            //    }
+            //    _authToken = string.Empty;
             //}
         }
 
@@ -111,45 +137,34 @@ namespace Mx.NET.SDK.WalletConnectV2
             await _client.Disconnect(_walletConnectV2Session.Topic, ErrorResponse.FromErrorType(ErrorType.USER_DISCONNECTED));
             Address = string.Empty;
             Signature = string.Empty;
-            _authToken = string.Empty;
         }
 
         public async Task<TransactionRequestDto> Sign(TransactionRequest transactionRequest)
         {
             var request = transactionRequest.GetSignTransactionRequest();
+            var response = await _client.Request<SignTransactionRequest, SignTransactionResponse>(_walletConnectV2Session.Topic, request);
 
-            try
-            {
-                var response = await _client.Request<SignTransactionRequest, SignTransactionResponse>(_walletConnectV2Session.Topic, request);
-                var transaction = transactionRequest.ToDto();
-                transaction.Signature = response.Signature;
-                return transaction;
-            }
-            catch (Exception) { throw; }
+            var transaction = transactionRequest.GetTransactionRequest();
+            transaction.Signature = response.Signature;
+            return transaction;
         }
 
         public async Task<TransactionRequestDto[]> MultiSign(TransactionRequest[] transactionsRequest)
         {
             var request = transactionsRequest.GetSignTransactionsRequest();
+            var response = await _client.Request<SignTransactionsRequest, SignTransactionsResponse>(_walletConnectV2Session.Topic, request);
 
-            try
+            var transactions = new List<TransactionRequestDto>();
+            for (var i = 0; i < response.Signatures.Length; i++)
             {
-                var response = await _client.Request<SignTransactionsRequest, SignTransactionsResponse>(_walletConnectV2Session.Topic, request);
-
-                var transactions = new List<TransactionRequestDto>();
-                for (var i = 0; i < response.Signatures.Length; i++)
-                {
-                    var transactionRequestDto = transactionsRequest[i].ToDto();
-                    transactionRequestDto.Signature = response.Signatures[i].Signature;
-                    transactions.Add(transactionRequestDto);
-                }
-
-                return transactions.ToArray();
+                var transactionRequestDto = transactionsRequest[i].GetTransactionRequest();
+                transactionRequestDto.Signature = response.Signatures[i].Signature;
+                transactions.Add(transactionRequestDto);
             }
-            catch (Exception) { throw; }
+
+            return transactions.ToArray();
         }
 
-        public event EventHandler OnSessionConnectEvent;
         public event EventHandler<GenericEvent<SessionUpdateEvent>> OnSessionUpdateEvent;
         public event EventHandler<GenericEvent<SessionEvent>> OnSessionEvent;
         public event EventHandler OnSessionDeleteEvent;
