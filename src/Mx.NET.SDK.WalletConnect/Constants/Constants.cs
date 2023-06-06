@@ -1,4 +1,4 @@
-﻿namespace Mx.NET.SDK.WalletConnectV2.Constants
+﻿namespace Mx.NET.SDK.WalletConnect.Constants
 {
     public class Operations
     {

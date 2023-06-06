@@ -1,8 +1,9 @@
 ﻿using Mx.NET.SDK.Domain;
 using Mx.NET.SDK.Provider.Dtos.API.Transactions;
+using Mx.NET.SDK.WalletConnect.Models.Events;
 using System;
 using System.Threading.Tasks;
-using WalletConnectSharp.Core;
+using WalletConnectSharp.Events.Model;
 
 namespace Mx.NET.SDK.WalletConnect
 {
@@ -10,13 +11,20 @@ namespace Mx.NET.SDK.WalletConnect
     {
         string URI { get; }
         string Address { get; }
+        string Signature { get; }
+        Uri WalletConnectUri { get; }
 
-        public event EventHandler<WalletConnectSession> OnSessionConnected;
-        public event EventHandler OnSessionDisconnected;
+        event EventHandler<GenericEvent<SessionUpdateEvent>> OnSessionUpdateEvent;
+        event EventHandler<GenericEvent<SessionEvent>> OnSessionEvent;
+        event EventHandler OnSessionDeleteEvent;
+        event EventHandler OnSessionExpireEvent;
+        event EventHandler<GenericEvent<TopicUpdateEvent>> OnTopicUpdateEvent;
 
-        bool IsConnected();
+        Task<bool> GetConnection();
 
-        Task Connect();
+        Task Initialize();
+
+        Task Connect(string authToken = null);
 
         Task Disconnect();
 

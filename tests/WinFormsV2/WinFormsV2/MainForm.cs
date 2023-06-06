@@ -2,10 +2,12 @@ using Mx.NET.SDK.Configuration;
 using Mx.NET.SDK.Core.Domain;
 using Mx.NET.SDK.Domain.Data.Account;
 using Mx.NET.SDK.Domain.Data.Network;
+using Mx.NET.SDK.NativeAuthClient;
+using Mx.NET.SDK.NativeAuthClient.Entities;
 using Mx.NET.SDK.Provider;
 using Mx.NET.SDK.TransactionsManager;
-using Mx.NET.SDK.WalletConnectV2;
-using Mx.NET.SDK.WalletConnectV2.Models.Events;
+using Mx.NET.SDK.WalletConnect;
+using Mx.NET.SDK.WalletConnect.Models.Events;
 using QRCoder;
 using System.Diagnostics;
 using WalletConnectSharp.Core.Models.Pairing;
@@ -16,12 +18,16 @@ namespace WinForms
 {
     public partial class MainForm : Form
     {
-        const string ChainID = "D";
-        IWalletConnectV2 WalletConnectV2 { get; set; }
+        const string CHAIN_ID = "D";
+        const string PROJECT_ID = "c7d3aa2b21836c991357e8a56c252962";
 
+        IWalletConnect WalletConnect { get; set; }
+
+        private readonly NativeAuthClient _nativeAuthToken = default!;
+
+        readonly MultiversxProvider Provider = new(new MultiversxNetworkConfiguration(Network.DevNet));
         NetworkConfig NetworkConfig { get; set; } = default!;
         Account Account { get; set; } = default!;
-        readonly MultiversxProvider Provider = new(new MultiversxNetworkConfiguration(Network.DevNet));
 
         public MainForm()
         {
@@ -33,27 +39,33 @@ namespace WinForms
             {
                 Name = "Mx.NET.WinForms",
                 Description = "Mx.NET.WinForms login testing",
-                Icons = new[] { "https://remarkable.tools/RemarkableTools.ico" },
-                Url = "https://remarkable.tools/"
+                Icons = new[] { "https://devnet.remarkable.tools/remarkabletools.ico" },
+                Url = "https://devnet.remarkable.tools/"
             };
-            WalletConnectV2 = new WalletConnectV2(metadata, ChainID);
+            WalletConnect = new WalletConnect(metadata, PROJECT_ID, CHAIN_ID);
+            _nativeAuthToken = new(new NativeAuthClientConfig()
+            {
+                Origin = metadata.Name,
+                ExpirySeconds = 14400,
+                BlockHashShard = 2
+            });
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
         {
             LogMessage("Looking for wallet connection...", SystemColors.ControlText);
 
-            var hasConnection = await WalletConnectV2.GetConnection();
-            WalletConnectV2.OnSessionUpdateEvent += OnSessionUpdateEvent;
-            WalletConnectV2.OnSessionEvent += OnSessionEvent;
-            WalletConnectV2.OnSessionDeleteEvent += OnSessionDeleteEvent;
-            WalletConnectV2.OnSessionExpireEvent += OnSessionDeleteEvent;
-            WalletConnectV2.OnTopicUpdateEvent += OnTopicUpdateEvent;
+            var hasConnection = await WalletConnect.GetConnection();
+            WalletConnect.OnSessionUpdateEvent += OnSessionUpdateEvent;
+            WalletConnect.OnSessionEvent += OnSessionEvent;
+            WalletConnect.OnSessionDeleteEvent += OnSessionDeleteEvent;
+            WalletConnect.OnSessionExpireEvent += OnSessionDeleteEvent;
+            WalletConnect.OnTopicUpdateEvent += OnTopicUpdateEvent;
 
             if (hasConnection)
             {
                 NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
-                Account = Account.From(await Provider.GetAccount(WalletConnectV2.Address));
+                Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
 
                 qrCodeImg.Visible = false;
                 btnConnect.Visible = false;
@@ -63,7 +75,7 @@ namespace WinForms
             }
             else
             {
-                LogMessage("Connect to xPortal App...", SystemColors.ControlText);
+                LogMessage("Connect with xPortal App", SystemColors.ControlText);
             }
         }
 
@@ -103,10 +115,10 @@ namespace WinForms
 
         private async void BtnConnect_Click(object sender, EventArgs e)
         {
-            await WalletConnectV2.Initialize();
+            await WalletConnect.Initialize();
 
             QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(WalletConnectV2.URI, QRCodeGenerator.ECCLevel.Q);
+            QRCodeData qrCodeData = qrGenerator.CreateQrCode(WalletConnect.URI, QRCodeGenerator.ECCLevel.Q);
             QRCode qrCode = new QRCode(qrCodeData);
             qrCodeImg.BackgroundImage = qrCode.GetGraphic(4);
             qrCodeImg.Visible = true;
@@ -115,13 +127,16 @@ namespace WinForms
 
             try
             {
-                await WalletConnectV2.Connect();
+                var authToken = await _nativeAuthToken.GenerateToken();
+                await WalletConnect.Connect(authToken);
                 qrCodeImg.Visible = false;
                 btnConnect.Visible = false;
                 btnDisconnect.Visible = true;
 
+                Debug.WriteLine(WalletConnect.Signature);
+
                 NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
-                Account = Account.From(await Provider.GetAccount(WalletConnectV2.Address));
+                Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
 
                 LogMessage("Wallet connected", Color.ForestGreen);
             }
@@ -134,7 +149,7 @@ namespace WinForms
 
         private async void BtnDisconnect_Click(object sender, EventArgs e)
         {
-            await WalletConnectV2.Disconnect();
+            await WalletConnect.Disconnect();
             btnConnect.Visible = true;
             btnDisconnect.Visible = false;
 
@@ -157,7 +172,7 @@ namespace WinForms
 
             try
             {
-                var transactionRequestDto = await WalletConnectV2.Sign(transaction);
+                var transactionRequestDto = await WalletConnect.Sign(transaction);
                 var response = await Provider.SendTransaction(transactionRequestDto);
                 MessageBox.Show($"Transaction sent to network");
             }
@@ -199,7 +214,7 @@ namespace WinForms
             var transactions = new[] { transaction1, transaction2, transaction3 };
             try
             {
-                var transactionsRequestDto = await WalletConnectV2.MultiSign(transactions);
+                var transactionsRequestDto = await WalletConnect.MultiSign(transactions);
                 var response = await Provider.SendTransactions(transactionsRequestDto);
                 MessageBox.Show($"Transactions sent to network");
             }

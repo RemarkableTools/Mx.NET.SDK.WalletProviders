@@ -29,145 +29,144 @@
         private void InitializeComponent()
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(MainForm));
-            this.btnSendMultiple = new System.Windows.Forms.Button();
-            this.btnSend = new System.Windows.Forms.Button();
-            this.btnDisconnect = new System.Windows.Forms.Button();
-            this.btnConnect = new System.Windows.Forms.Button();
-            this.qrCodeImg = new System.Windows.Forms.PictureBox();
-            this.tbReceiver = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.label2 = new System.Windows.Forms.Label();
-            this.tbEGLD = new System.Windows.Forms.TextBox();
-            this.tbConnectionStatus = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.qrCodeImg)).BeginInit();
-            this.SuspendLayout();
+            btnSendMultiple = new Button();
+            btnSend = new Button();
+            btnDisconnect = new Button();
+            btnConnect = new Button();
+            qrCodeImg = new PictureBox();
+            tbReceiver = new TextBox();
+            label1 = new Label();
+            label2 = new Label();
+            tbEGLD = new TextBox();
+            tbConnectionStatus = new Label();
+            ((System.ComponentModel.ISupportInitialize)qrCodeImg).BeginInit();
+            SuspendLayout();
             // 
             // btnSendMultiple
             // 
-            this.btnSendMultiple.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSendMultiple.Location = new System.Drawing.Point(154, 697);
-            this.btnSendMultiple.Name = "btnSendMultiple";
-            this.btnSendMultiple.Size = new System.Drawing.Size(127, 39);
-            this.btnSendMultiple.TabIndex = 9;
-            this.btnSendMultiple.Text = "Send Multiple";
-            this.btnSendMultiple.UseVisualStyleBackColor = true;
-            this.btnSendMultiple.Click += new System.EventHandler(this.BtnSendMultiple_Click);
+            btnSendMultiple.FlatStyle = FlatStyle.Flat;
+            btnSendMultiple.Location = new Point(154, 697);
+            btnSendMultiple.Name = "btnSendMultiple";
+            btnSendMultiple.Size = new Size(127, 39);
+            btnSendMultiple.TabIndex = 9;
+            btnSendMultiple.Text = "Send Multiple";
+            btnSendMultiple.UseVisualStyleBackColor = true;
+            btnSendMultiple.Click += BtnSendMultiple_Click;
             // 
             // btnSend
             // 
-            this.btnSend.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnSend.Location = new System.Drawing.Point(26, 697);
-            this.btnSend.Name = "btnSend";
-            this.btnSend.Size = new System.Drawing.Size(99, 39);
-            this.btnSend.TabIndex = 8;
-            this.btnSend.Text = "Send";
-            this.btnSend.UseVisualStyleBackColor = true;
-            this.btnSend.Click += new System.EventHandler(this.BtnSend_Click);
+            btnSend.FlatStyle = FlatStyle.Flat;
+            btnSend.Location = new Point(26, 697);
+            btnSend.Name = "btnSend";
+            btnSend.Size = new Size(99, 39);
+            btnSend.TabIndex = 8;
+            btnSend.Text = "Send";
+            btnSend.UseVisualStyleBackColor = true;
+            btnSend.Click += BtnSend_Click;
             // 
             // btnDisconnect
             // 
-            this.btnDisconnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnDisconnect.Location = new System.Drawing.Point(26, 513);
-            this.btnDisconnect.Name = "btnDisconnect";
-            this.btnDisconnect.Size = new System.Drawing.Size(99, 39);
-            this.btnDisconnect.TabIndex = 4;
-            this.btnDisconnect.Text = "Disconnect";
-            this.btnDisconnect.UseVisualStyleBackColor = true;
-            this.btnDisconnect.Visible = false;
-            this.btnDisconnect.Click += new System.EventHandler(this.BtnDisconnect_Click);
+            btnDisconnect.FlatStyle = FlatStyle.Flat;
+            btnDisconnect.Location = new Point(26, 513);
+            btnDisconnect.Name = "btnDisconnect";
+            btnDisconnect.Size = new Size(99, 39);
+            btnDisconnect.TabIndex = 4;
+            btnDisconnect.Text = "Disconnect";
+            btnDisconnect.UseVisualStyleBackColor = true;
+            btnDisconnect.Visible = false;
+            btnDisconnect.Click += BtnDisconnect_Click;
             // 
             // btnConnect
             // 
-            this.btnConnect.FlatStyle = System.Windows.Forms.FlatStyle.Flat;
-            this.btnConnect.Location = new System.Drawing.Point(26, 513);
-            this.btnConnect.Name = "btnConnect";
-            this.btnConnect.Size = new System.Drawing.Size(99, 39);
-            this.btnConnect.TabIndex = 3;
-            this.btnConnect.Text = "Connect";
-            this.btnConnect.UseVisualStyleBackColor = true;
-            this.btnConnect.Click += new System.EventHandler(this.BtnConnect_Click);
+            btnConnect.FlatStyle = FlatStyle.Flat;
+            btnConnect.Location = new Point(26, 513);
+            btnConnect.Name = "btnConnect";
+            btnConnect.Size = new Size(99, 39);
+            btnConnect.TabIndex = 3;
+            btnConnect.Text = "Connect";
+            btnConnect.UseVisualStyleBackColor = true;
+            btnConnect.Click += BtnConnect_Click;
             // 
             // qrCodeImg
             // 
-            this.qrCodeImg.BackgroundImageLayout = System.Windows.Forms.ImageLayout.Center;
-            this.qrCodeImg.Location = new System.Drawing.Point(26, 27);
-            this.qrCodeImg.Name = "qrCodeImg";
-            this.qrCodeImg.Size = new System.Drawing.Size(593, 446);
-            this.qrCodeImg.TabIndex = 5;
-            this.qrCodeImg.TabStop = false;
+            qrCodeImg.BackgroundImageLayout = ImageLayout.Center;
+            qrCodeImg.Location = new Point(26, 27);
+            qrCodeImg.Name = "qrCodeImg";
+            qrCodeImg.Size = new Size(593, 446);
+            qrCodeImg.TabIndex = 5;
+            qrCodeImg.TabStop = false;
             // 
             // tbReceiver
             // 
-            this.tbReceiver.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tbReceiver.Location = new System.Drawing.Point(97, 610);
-            this.tbReceiver.Name = "tbReceiver";
-            this.tbReceiver.Size = new System.Drawing.Size(522, 27);
-            this.tbReceiver.TabIndex = 0;
+            tbReceiver.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
+            tbReceiver.Location = new Point(97, 610);
+            tbReceiver.Name = "tbReceiver";
+            tbReceiver.Size = new Size(522, 27);
+            tbReceiver.TabIndex = 0;
             // 
             // label1
             // 
-            this.label1.AutoSize = true;
-            this.label1.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label1.Location = new System.Drawing.Point(26, 613);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(65, 20);
-            this.label1.TabIndex = 0;
-            this.label1.Text = "Receiver";
+            label1.AutoSize = true;
+            label1.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label1.Location = new Point(26, 613);
+            label1.Name = "label1";
+            label1.Size = new Size(65, 20);
+            label1.TabIndex = 0;
+            label1.Text = "Receiver";
             // 
             // label2
             // 
-            this.label2.AutoSize = true;
-            this.label2.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.label2.Location = new System.Drawing.Point(46, 655);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(45, 20);
-            this.label2.TabIndex = 13;
-            this.label2.Text = "EGLD";
+            label2.AutoSize = true;
+            label2.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
+            label2.Location = new Point(46, 655);
+            label2.Name = "label2";
+            label2.Size = new Size(45, 20);
+            label2.TabIndex = 13;
+            label2.Text = "EGLD";
             // 
             // tbEGLD
             // 
-            this.tbEGLD.Font = new System.Drawing.Font("Segoe UI", 11.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.tbEGLD.Location = new System.Drawing.Point(97, 652);
-            this.tbEGLD.Name = "tbEGLD";
-            this.tbEGLD.Size = new System.Drawing.Size(88, 27);
-            this.tbEGLD.TabIndex = 1;
+            tbEGLD.Font = new Font("Segoe UI", 11.25F, FontStyle.Regular, GraphicsUnit.Point);
+            tbEGLD.Location = new Point(97, 652);
+            tbEGLD.Name = "tbEGLD";
+            tbEGLD.Size = new Size(88, 27);
+            tbEGLD.TabIndex = 1;
             // 
             // tbConnectionStatus
             // 
-            this.tbConnectionStatus.AutoSize = true;
-            this.tbConnectionStatus.Font = new System.Drawing.Font("Segoe UI Semibold", 11.25F, System.Drawing.FontStyle.Bold, System.Drawing.GraphicsUnit.Point);
-            this.tbConnectionStatus.Location = new System.Drawing.Point(26, 557);
-            this.tbConnectionStatus.Name = "tbConnectionStatus";
-            this.tbConnectionStatus.Size = new System.Drawing.Size(0, 20);
-            this.tbConnectionStatus.TabIndex = 14;
+            tbConnectionStatus.AutoSize = true;
+            tbConnectionStatus.Font = new Font("Segoe UI Semibold", 11.25F, FontStyle.Bold, GraphicsUnit.Point);
+            tbConnectionStatus.Location = new Point(26, 557);
+            tbConnectionStatus.Name = "tbConnectionStatus";
+            tbConnectionStatus.Size = new Size(0, 20);
+            tbConnectionStatus.TabIndex = 14;
             // 
             // MainForm
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 17F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.SystemColors.Window;
-            this.ClientSize = new System.Drawing.Size(645, 774);
-            this.Controls.Add(this.tbConnectionStatus);
-            this.Controls.Add(this.label2);
-            this.Controls.Add(this.tbEGLD);
-            this.Controls.Add(this.label1);
-            this.Controls.Add(this.tbReceiver);
-            this.Controls.Add(this.btnSendMultiple);
-            this.Controls.Add(this.btnSend);
-            this.Controls.Add(this.qrCodeImg);
-            this.Controls.Add(this.btnConnect);
-            this.Controls.Add(this.btnDisconnect);
-            this.Font = new System.Drawing.Font("Segoe UI", 9.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point);
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "MainForm";
-            this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-            this.Text = "Wallet Connect - Example";
-            this.Load += new System.EventHandler(this.MainForm_Load);
-            this.Shown += new System.EventHandler(this.MainForm_Shown);
-            ((System.ComponentModel.ISupportInitialize)(this.qrCodeImg)).EndInit();
-            this.ResumeLayout(false);
-            this.PerformLayout();
-
+            AutoScaleDimensions = new SizeF(7F, 17F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = SystemColors.Window;
+            ClientSize = new Size(645, 774);
+            Controls.Add(tbConnectionStatus);
+            Controls.Add(label2);
+            Controls.Add(tbEGLD);
+            Controls.Add(label1);
+            Controls.Add(tbReceiver);
+            Controls.Add(btnSendMultiple);
+            Controls.Add(btnSend);
+            Controls.Add(qrCodeImg);
+            Controls.Add(btnConnect);
+            Controls.Add(btnDisconnect);
+            Font = new Font("Segoe UI", 9.75F, FontStyle.Regular, GraphicsUnit.Point);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "MainForm";
+            StartPosition = FormStartPosition.CenterScreen;
+            Text = "Wallet Connect - Example";
+            Load += MainForm_Load;
+            Shown += MainForm_Shown;
+            ((System.ComponentModel.ISupportInitialize)qrCodeImg).EndInit();
+            ResumeLayout(false);
+            PerformLayout();
         }
 
         #endregion

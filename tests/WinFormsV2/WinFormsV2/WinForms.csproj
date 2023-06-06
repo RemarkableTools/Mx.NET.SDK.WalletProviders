@@ -20,7 +20,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <ProjectReference Include="..\..\..\src\Mx.NET.SDK.WalletConnectV2\Mx.NET.SDK.WalletConnectV2.csproj" />
+    <ProjectReference Include="..\..\..\src\Mx.NET.SDK.WalletConnect\Mx.NET.SDK.WalletConnect.csproj" />
   </ItemGroup>
 
   <ItemGroup>

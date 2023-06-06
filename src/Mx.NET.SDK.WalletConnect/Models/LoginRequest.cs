@@ -1,14 +1,17 @@
-﻿using WalletConnectSharp.Common.Utils;
+﻿using Newtonsoft.Json;
+using WalletConnectSharp.Common.Utils;
 using WalletConnectSharp.Network.Models;
 
-namespace Mx.NET.SDK.WalletConnectV2.Models
+namespace Mx.NET.SDK.WalletConnect.Models
 {
     [RpcMethod("multiversx_signLoginToken")]
-    [RpcRequestOptions(Clock.TEN_SECONDS, true, 1108)]
-    [RpcResponseOptions(Clock.TEN_SECONDS, false, 1109)]
+    [RpcRequestOptions(Clock.ONE_DAY, 1108)]
+    [RpcResponseOptions(Clock.ONE_DAY, 1109)]
     public class LoginRequest
     {
+        [JsonProperty("token")]
         public string Token { get; set; }
+        [JsonProperty("address")]
         public string Address { get; set; }
 
         public LoginRequest(string token, string address)

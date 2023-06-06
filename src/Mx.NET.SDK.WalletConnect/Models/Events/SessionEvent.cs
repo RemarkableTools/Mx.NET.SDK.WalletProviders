@@ -1,6 +1,6 @@
 ﻿using Newtonsoft.Json;
 
-namespace Mx.NET.SDK.WalletConnectV2.Models.Events
+namespace Mx.NET.SDK.WalletConnect.Models.Events
 {
     public class SessionEvent
     {

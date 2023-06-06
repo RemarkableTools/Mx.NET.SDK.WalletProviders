@@ -2,7 +2,7 @@
 using Mx.NET.SDK.Core.Domain;
 using Mx.NET.SDK.Wallet.Wallet;
 
-namespace Mx.NET.SDK.WalletConnectV2.Services
+namespace Mx.NET.SDK.WalletConnect.Services
 {
     public static class SignatureVerifier
     {
