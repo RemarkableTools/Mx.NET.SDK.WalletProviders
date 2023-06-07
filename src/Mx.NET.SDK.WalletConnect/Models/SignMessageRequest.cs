@@ -4,22 +4,22 @@ using WalletConnectSharp.Network.Models;
 
 namespace Mx.NET.SDK.WalletConnect.Models
 {
-    [RpcMethod("mvx_signLoginToken")]
-    public class LoginRequest
+    [RpcMethod("mvx_signMessage")]
+    public class SignMessageRequest
     {
-        [JsonProperty("token")]
-        public string Token { get; set; }
         [JsonProperty("address")]
         public string Address { get; set; }
+        [JsonProperty("message")]
+        public string Message { get; set; }
 
-        public LoginRequest(string token, string address)
+        public SignMessageRequest(string address, string message)
         {
-            Token = token;
             Address = address;
+            Message = message;
         }
     }
 
-    public class LoginResponse
+    public class SignMessageResponse
     {
         public string Signature { get; set; }
     }

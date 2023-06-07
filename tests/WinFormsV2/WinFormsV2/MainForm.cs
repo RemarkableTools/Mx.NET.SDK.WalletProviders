@@ -4,6 +4,8 @@ using Mx.NET.SDK.Domain.Data.Account;
 using Mx.NET.SDK.Domain.Data.Network;
 using Mx.NET.SDK.NativeAuthClient;
 using Mx.NET.SDK.NativeAuthClient.Entities;
+using Mx.NET.SDK.NativeAuthServer;
+using Mx.NET.SDK.NativeAuthServer.Entities;
 using Mx.NET.SDK.Provider;
 using Mx.NET.SDK.TransactionsManager;
 using Mx.NET.SDK.WalletConnect;
@@ -24,6 +26,7 @@ namespace WinForms
         IWalletConnect WalletConnect { get; set; }
 
         private readonly NativeAuthClient _nativeAuthToken = default!;
+        private readonly NativeAuthServer _nativeAuthServer = default!;
 
         readonly MultiversxProvider Provider = new(new MultiversxNetworkConfiguration(Network.DevNet));
         NetworkConfig NetworkConfig { get; set; } = default!;
@@ -49,6 +52,11 @@ namespace WinForms
                 ExpirySeconds = 14400,
                 BlockHashShard = 2
             });
+            var nativeAuthServerConfig = new NativeAuthServerConfig()
+            {
+                AcceptedOrigins = new[] { metadata.Name }
+            };
+            _nativeAuthServer = new(nativeAuthServerConfig);
         }
 
         private async void MainForm_Load(object sender, EventArgs e)
@@ -59,22 +67,24 @@ namespace WinForms
             WalletConnect.OnSessionUpdateEvent += OnSessionUpdateEvent;
             WalletConnect.OnSessionEvent += OnSessionEvent;
             WalletConnect.OnSessionDeleteEvent += OnSessionDeleteEvent;
-            WalletConnect.OnSessionExpireEvent += OnSessionDeleteEvent;
+            WalletConnect.OnSessionExpireEvent += OnSessionExpireEvent;
             WalletConnect.OnTopicUpdateEvent += OnTopicUpdateEvent;
 
             if (hasConnection)
             {
-                NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
-                Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
-
                 qrCodeImg.Visible = false;
                 btnConnect.Visible = false;
                 btnDisconnect.Visible = true;
 
-                LogMessage("Wallet connected", Color.ForestGreen);
+                LogMessage("Wallet connection restored", Color.ForestGreen);
+
+                NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
+                Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
             }
             else
             {
+                btnConnect.Visible = true;
+
                 LogMessage("Connect with xPortal App", SystemColors.ControlText);
             }
         }
@@ -92,7 +102,7 @@ namespace WinForms
 
         private void OnSessionUpdateEvent(object? sender, GenericEvent<SessionUpdateEvent> @event)
         {
-            LogMessage("Wallet connected", Color.ForestGreen);
+            Debug.WriteLine("Session Update Event");
         }
 
         private void OnSessionEvent(object? sender, GenericEvent<SessionEvent> @event)
@@ -102,10 +112,24 @@ namespace WinForms
 
         private void OnSessionDeleteEvent(object? sender, EventArgs e)
         {
+            NetworkConfig = default!;
+            Account = default!;
+
             btnConnect.Visible = true;
             btnDisconnect.Visible = false;
 
             LogMessage("Wallet disconnected", Color.Firebrick);
+        }
+
+        private void OnSessionExpireEvent(object? sender, EventArgs e)
+        {
+            btnConnect.Visible = true;
+            btnDisconnect.Visible = false;
+
+            NetworkConfig = default!;
+            Account = default!;
+
+            LogMessage("Session expired", Color.Firebrick);
         }
 
         private void OnTopicUpdateEvent(object? sender, GenericEvent<TopicUpdateEvent> @event)
@@ -115,11 +139,14 @@ namespace WinForms
 
         private async void BtnConnect_Click(object sender, EventArgs e)
         {
-            await WalletConnect.Initialize();
+            LogMessage("Generating QR code...", Color.Blue);
 
-            QRCodeGenerator qrGenerator = new QRCodeGenerator();
-            QRCodeData qrCodeData = qrGenerator.CreateQrCode(WalletConnect.URI, QRCodeGenerator.ECCLevel.Q);
-            QRCode qrCode = new QRCode(qrCodeData);
+            var authToken = await _nativeAuthToken.GenerateToken();
+            await WalletConnect.Initialize(authToken);
+
+            var qrGenerator = new QRCodeGenerator();
+            var qrCodeData = qrGenerator.CreateQrCode(WalletConnect.URI, QRCodeGenerator.ECCLevel.Q);
+            var qrCode = new QRCode(qrCodeData);
             qrCodeImg.BackgroundImage = qrCode.GetGraphic(4);
             qrCodeImg.Visible = true;
 
@@ -127,13 +154,22 @@ namespace WinForms
 
             try
             {
-                var authToken = await _nativeAuthToken.GenerateToken();
-                await WalletConnect.Connect(authToken);
+                await WalletConnect.Connect();
+
+                try
+                {
+                    var accessToken = NativeAuthClient.GetAccessToken(WalletConnect.Address, authToken, WalletConnect.Signature);
+                    _nativeAuthServer.Validate(accessToken);
+                }
+                catch
+                {
+                    await Disconnect();
+                    return;
+                }
+
                 qrCodeImg.Visible = false;
                 btnConnect.Visible = false;
                 btnDisconnect.Visible = true;
-
-                Debug.WriteLine(WalletConnect.Signature);
 
                 NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
                 Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
@@ -149,11 +185,36 @@ namespace WinForms
 
         private async void BtnDisconnect_Click(object sender, EventArgs e)
         {
+            await Disconnect();
+        }
+
+        private async Task Disconnect()
+        {
             await WalletConnect.Disconnect();
+
+            NetworkConfig = default!;
+            Account = default!;
+
+            qrCodeImg.Visible = false;
             btnConnect.Visible = true;
             btnDisconnect.Visible = false;
 
             LogMessage("Wallet disconnected", Color.Firebrick);
+        }
+
+        private async void BtnSignMessage_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(tbMessage.Text)) return;
+
+            try
+            {
+                var signedMessage = await WalletConnect.SignMessage(tbMessage.Text);
+                lbSignature.Text = signedMessage.Signature;
+            }
+            catch
+            {
+                lbSignature.Text = "Signature error";
+            }
         }
 
         private async void BtnSend_Click(object sender, EventArgs e)
@@ -222,6 +283,11 @@ namespace WinForms
             {
                 MessageBox.Show($"Exception: {ex.Message}");
             }
+        }
+
+        private void button1_Click(object sender, EventArgs e)
+        {
+            Debug.WriteLine(WalletConnect.IsConnected());
         }
     }
 }

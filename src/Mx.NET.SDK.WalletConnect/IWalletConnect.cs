@@ -1,35 +1,33 @@
-﻿using Mx.NET.SDK.Domain;
+﻿using Mx.NET.SDK.Core.Domain;
+using Mx.NET.SDK.Domain;
 using Mx.NET.SDK.Provider.Dtos.API.Transactions;
-using Mx.NET.SDK.WalletConnect.Models.Events;
 using System;
 using System.Threading.Tasks;
 using WalletConnectSharp.Events.Model;
 
 namespace Mx.NET.SDK.WalletConnect
 {
-    public interface IWalletConnect
+    public interface IWalletConnect : IWalletConnectGeneric
     {
-        string URI { get; }
-        string Address { get; }
-        string Signature { get; }
-        Uri WalletConnectUri { get; }
+        /// <summary>
+        /// Sign a message
+        /// </summary>
+        /// <param name="message">Message to be signed</param>
+        /// <returns>Signed message</returns>
+        new Task<SignableMessage> SignMessage(string message);
 
-        event EventHandler<GenericEvent<SessionUpdateEvent>> OnSessionUpdateEvent;
-        event EventHandler<GenericEvent<SessionEvent>> OnSessionEvent;
-        event EventHandler OnSessionDeleteEvent;
-        event EventHandler OnSessionExpireEvent;
-        event EventHandler<GenericEvent<TopicUpdateEvent>> OnTopicUpdateEvent;
-
-        Task<bool> GetConnection();
-
-        Task Initialize();
-
-        Task Connect(string authToken = null);
-
-        Task Disconnect();
-
+        /// <summary>
+        /// Request to xPortal app to sign a transaction
+        /// </summary>
+        /// <param name="transactionRequest">Transaction Request</param>
+        /// <returns>Transaction payload</returns>
         Task<TransactionRequestDto> Sign(TransactionRequest transactionRequest);
 
+        /// <summary>
+        /// Request to xPortal app to sign multiple transactions
+        /// </summary>
+        /// <param name="transactionsRequest">Transactions Request</param>
+        /// <returns>Transactions payload</returns>
         Task<TransactionRequestDto[]> MultiSign(TransactionRequest[] transactionsRequest);
     }
 }

@@ -5,9 +5,7 @@ using WalletConnectSharp.Network.Models;
 
 namespace Mx.NET.SDK.WalletConnect.Models
 {
-    [RpcMethod("multiversx_signTransaction")]
-    [RpcRequestOptions(Clock.ONE_DAY, 1108)]
-    [RpcResponseOptions(Clock.ONE_DAY, 1109)]
+    [RpcMethod("mvx_signTransaction")]
     public class SignTransactionRequest
     {
         [JsonProperty("transaction")]

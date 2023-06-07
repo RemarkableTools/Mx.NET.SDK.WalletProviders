@@ -9,6 +9,6 @@ namespace Mx.NET.SDK.WalletConnect.Models.Events
         public string Topic { get; set; }
 
         [JsonProperty("params")]
-        public SessionUpdate Params { get; set; }
+        public dynamic Params { get; set; }
     }
 }

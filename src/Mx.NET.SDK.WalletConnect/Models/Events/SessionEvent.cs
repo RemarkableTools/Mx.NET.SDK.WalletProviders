@@ -13,7 +13,7 @@ namespace Mx.NET.SDK.WalletConnect.Models.Events
 
     public class SessionEventTypes
     {
-        [JsonProperty("param")]
+        [JsonProperty("event")]
         public Event Event { get; set; }
 
         [JsonProperty("chainId")]
