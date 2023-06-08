@@ -182,4 +182,4 @@ catch (Exception ex)
 ```
 
 ## Basic usage example
-A Windows application example can be found [here](https://github.com/RemarkableTools/Mx.NET.Examples).
+A Windows application example can be found [here](https://github.com/RemarkableTools/Mx.NET.SDK.WalletProviders/tree/dev/tests/WinFormsV2).
