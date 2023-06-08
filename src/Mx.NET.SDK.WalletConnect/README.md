@@ -39,32 +39,43 @@ IWalletConnect WalletConnect = new WalletConnect(metadata, PROJECT_ID, CHAIN_ID)
 
 3. At start-up, you should check for old connection and setup the events
 ```csharp
-var hasConnection = await WalletConnect.GetConnection();
+await WalletConnect.ClientInit();
 WalletConnect.OnSessionUpdateEvent += OnSessionUpdateEvent;
 WalletConnect.OnSessionEvent += OnSessionEvent;
 WalletConnect.OnSessionDeleteEvent += OnSessionDeleteEvent;
 WalletConnect.OnSessionExpireEvent += OnSessionDeleteEvent;
 WalletConnect.OnTopicUpdateEvent += OnTopicUpdateEvent;
 
-if (hasConnection)
+try
 {
-    //initialize some variables
-    NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
-    Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
+    var isConnected = WalletConnect.TryReconnect();
+    if (isConnected)
+    {
+        //initialize some variables
+        NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
+        Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
 
-    //do other operations
+        //do other operations
+    }
+}
+catch (Exception ex)
+{
+    //Exception occured
 }
 ```
 
-4. Show a QR code generated with the link from `WalletConnect.URI`
+4. Initialize WalletConnect connection
+```csharp
+await WalletConnect.Initialize();
+```
 
-5. Start the wallet connection
+5. Show a QR code generated with the link from `WalletConnect.URI`
+
+6. Start the wallet connection
 ```csharp
 try
 {
     await WalletConnect.Connect(); 
-
-    //OnSessionUpdateEvent will be triggered after the connection was approved
 
     //initialize some variables
     NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
@@ -76,7 +87,7 @@ catch (Exception ex)
 }
 ```
 
-6. Session Events
+7. Session Events
 ```csharp
 private void OnSessionUpdateEvent(object? sender, GenericEvent<SessionUpdateEvent> @event)
 {
@@ -99,12 +110,12 @@ private void OnTopicUpdateEvent(object? sender, GenericEvent<TopicUpdateEvent> @
 }
 ```
 
-7. Disconnect function
+8. Disconnect function
 ```csharp
 await WalletConnect.Disconnect(); //this will also trigger OnSessionDeleteEvent
 ```
 
-8.1 Create a transaction then sign it with WalletConnect
+9.1 Create a transaction then sign it with WalletConnect
 ```csharp
 await Account.Sync(Provider); //always sync account first (to have the latest nonce)
 var receiver = "RECEIVER_ADDRESS";
@@ -128,7 +139,7 @@ catch (Exception ex)
 }
 ```
 
-8.2 Create multiple transactions the sign them with Wallet Connect
+9.2 Create multiple transactions the sign them with Wallet Connect
 ```csharp
 await Account.Sync(Provider); //always sync account first (to have the latest nonce)
 var receiver = "RECEIVER_ADDRESS";
