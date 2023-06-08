@@ -80,10 +80,19 @@ namespace Mx.NET.SDK.WalletConnect
             };
         }
 
-        public async Task<bool> GetConnection()
+        public async Task ClientInit()
         {
-            _client = await WalletConnectSignClient.Init(_dappOptions);
-            SubscribeToEvents();
+            if (_client is null)
+            {
+                _client = await WalletConnectSignClient.Init(_dappOptions);
+                SubscribeToEvents();
+            }
+        }
+
+        public bool TryReconnect()
+        {
+            if (_client is null)
+                throw new Exception("Client is not initialized");
 
             if (_client.Find(_dappConnectOptions.RequiredNamespaces).Length > 0)
             {
@@ -95,17 +104,18 @@ namespace Mx.NET.SDK.WalletConnect
 
         public async Task Initialize(string authToken = null)
         {
+            if (_client is null)
+                throw new Exception("Client is not initialized");
+
             _authToken = authToken;
             _walletConnect = await _client.Connect(_dappConnectOptions);
         }
 
-        public bool IsConnected()
-        {
-            return _walletConnect != null && !string.IsNullOrEmpty(Address);
-        }
-
         public async Task Connect()
         {
+            if (_walletConnect is null)
+                throw new Exception("WalletConnect is not initialized");
+
             _walletConnectSession = await _walletConnect.Approval;
 
             var selectedNamespace = _walletConnectSession.Namespaces[WALLETCONNECT_MULTIVERSX_NAMESPACE];

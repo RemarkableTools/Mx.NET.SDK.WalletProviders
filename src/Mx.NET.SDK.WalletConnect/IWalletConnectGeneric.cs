@@ -6,6 +6,7 @@ using Mx.NET.SDK.WalletConnect.Models.Events;
 using System;
 using System.Threading.Tasks;
 using WalletConnectSharp.Events.Model;
+using WalletConnectSharp.Sign;
 
 namespace Mx.NET.SDK.WalletConnect
 {
@@ -23,24 +24,24 @@ namespace Mx.NET.SDK.WalletConnect
         event EventHandler<GenericEvent<TopicUpdateEvent>> OnTopicUpdateEvent;
 
         /// <summary>
-        /// Returns true if there is a valid connection saved from last usage, otherwise false.
-        /// If the connection is valid, it will automatically reconnects to xPortal app
+        /// Initilize the client and subscribe to events, if not already initialized
         /// </summary>
-        /// <returns><see cref="bool"/></returns>
-        Task<bool> GetConnection();
+        /// <returns></returns>
+        Task ClientInit();
 
         /// <summary>
-        /// Initialize the WalletConnect client connection, preparing the URI for QR code and so on...
+        /// Returns true if there is a valid connection saved from last usage, otherwise false.
+        /// If the connection is valid, it will automatically reconnect
+        /// </summary>
+        /// <returns><see cref="bool"/></returns>
+        bool TryReconnect();
+
+        /// <summary>
+        /// Initialize the WalletConnect client connection
         /// </summary>
         /// <param name="authToken"></param>
         /// <returns></returns>
         Task Initialize(string authToken = null);
-
-        /// <summary>
-        /// Returns true if wallet is connected
-        /// </summary>
-        /// <returns></returns>
-        bool IsConnected();
 
         /// <summary>
         /// Awaits xPortal connection approval and is requesting the NativeAuthToken

@@ -63,35 +63,43 @@ namespace WinForms
         {
             LogMessage("Looking for wallet connection...", SystemColors.ControlText);
 
-            var hasConnection = await WalletConnect.GetConnection();
+            await WalletConnect.ClientInit();
             WalletConnect.OnSessionUpdateEvent += OnSessionUpdateEvent;
             WalletConnect.OnSessionEvent += OnSessionEvent;
             WalletConnect.OnSessionDeleteEvent += OnSessionDeleteEvent;
             WalletConnect.OnSessionExpireEvent += OnSessionExpireEvent;
             WalletConnect.OnTopicUpdateEvent += OnTopicUpdateEvent;
 
-            if (hasConnection)
+            try
             {
-                qrCodeImg.Visible = false;
-                btnConnect.Visible = false;
-                btnDisconnect.Visible = true;
+                var isConnected = WalletConnect.TryReconnect();
+                if (isConnected)
+                {
+                    qrCodeImg.Visible = false;
+                    btnConnect.Visible = false;
+                    btnDisconnect.Visible = true;
 
-                LogMessage("Wallet connection restored", Color.ForestGreen);
+                    LogMessage("Wallet connection restored", Color.ForestGreen);
 
-                NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
-                Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
+                    NetworkConfig = await NetworkConfig.GetFromNetwork(Provider);
+                    Account = Account.From(await Provider.GetAccount(WalletConnect.Address));
+                }
+                else
+                {
+                    btnConnect.Visible = true;
+
+                    LogMessage("Connect with xPortal App", SystemColors.ControlText);
+                }
             }
-            else
+            catch (Exception ex)
             {
-                btnConnect.Visible = true;
-
-                LogMessage("Connect with xPortal App", SystemColors.ControlText);
+                LogMessage(ex.Message, Color.Red);
             }
         }
 
-        private void MainForm_Shown(object sender, EventArgs e)
+        private void TbMessageToSign_TextChanged(object sender, EventArgs e)
         {
-            //BtnConnect_Click(sender, e);
+            lbSignature.Text = string.Empty;
         }
 
         private void LogMessage(string message, Color? color = null)
@@ -141,19 +149,19 @@ namespace WinForms
         {
             LogMessage("Generating QR code...", Color.Blue);
 
-            var authToken = await _nativeAuthToken.GenerateToken();
-            await WalletConnect.Initialize(authToken);
-
-            var qrGenerator = new QRCodeGenerator();
-            var qrCodeData = qrGenerator.CreateQrCode(WalletConnect.URI, QRCodeGenerator.ECCLevel.Q);
-            var qrCode = new QRCode(qrCodeData);
-            qrCodeImg.BackgroundImage = qrCode.GetGraphic(4);
-            qrCodeImg.Visible = true;
-
-            LogMessage("Waiting for wallet connection...", Color.Blue);
-
             try
             {
+                var authToken = await _nativeAuthToken.GenerateToken();
+                await WalletConnect.Initialize(authToken);
+
+                var qrGenerator = new QRCodeGenerator();
+                var qrCodeData = qrGenerator.CreateQrCode(WalletConnect.URI, QRCodeGenerator.ECCLevel.Q);
+                var qrCode = new QRCode(qrCodeData);
+                qrCodeImg.BackgroundImage = qrCode.GetGraphic(4);
+                qrCodeImg.Visible = true;
+
+                LogMessage("Waiting for wallet connection...", Color.Blue);
+
                 await WalletConnect.Connect();
 
                 try
@@ -178,7 +186,7 @@ namespace WinForms
             }
             catch (Exception ex)
             {
-                Debug.WriteLine(ex);
+                MessageBox.Show(ex.Message);
                 LogMessage("Wallet connection was not approved", Color.Gold);
             }
         }
@@ -204,16 +212,16 @@ namespace WinForms
 
         private async void BtnSignMessage_Click(object sender, EventArgs e)
         {
-            if (string.IsNullOrWhiteSpace(tbMessage.Text)) return;
+            if (string.IsNullOrWhiteSpace(tbMessageToSign.Text)) return;
 
             try
             {
-                var signedMessage = await WalletConnect.SignMessage(tbMessage.Text);
+                var signedMessage = await WalletConnect.SignMessage(tbMessageToSign.Text);
                 lbSignature.Text = signedMessage.Signature;
             }
-            catch
+            catch (Exception ex)
             {
-                lbSignature.Text = "Signature error";
+                MessageBox.Show(ex.Message);
             }
         }
 
@@ -283,11 +291,6 @@ namespace WinForms
             {
                 MessageBox.Show($"Exception: {ex.Message}");
             }
-        }
-
-        private void button1_Click(object sender, EventArgs e)
-        {
-            Debug.WriteLine(WalletConnect.IsConnected());
         }
     }
 }
