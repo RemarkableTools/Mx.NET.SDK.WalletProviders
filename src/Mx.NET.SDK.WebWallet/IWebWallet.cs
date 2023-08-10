@@ -1,6 +1,6 @@
 ﻿using System;
 using Mx.NET.SDK.Domain;
-using Mx.NET.SDK.Provider.Dtos.API.Transactions;
+using Mx.NET.SDK.Provider.Dtos.Common.Transactions;
 using Mx.NET.SDK.WebWallet.Enums;
 
 namespace Mx.NET.SDK.WebWallet
@@ -13,7 +13,7 @@ namespace Mx.NET.SDK.WebWallet
 
         Uri CreateTransactionUrl(TransactionRequest transaction, string callbackUrl);
 
-        Uri CreateTransactionToSignUrl(TransactionRequest transaction, string callbackUrl);
+        Uri CreateTransactionsToSignUrl(TransactionRequest transaction, string callbackUrl);
 
         Uri CreateTransactionsToSignUrl(TransactionRequest[] transactions, string callbackUrl);
 
