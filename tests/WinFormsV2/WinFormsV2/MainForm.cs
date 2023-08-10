@@ -48,13 +48,14 @@ namespace WinForms
             WalletConnect = new WalletConnect(metadata, PROJECT_ID, CHAIN_ID);
             _nativeAuthToken = new(new NativeAuthClientConfig()
             {
-                Origin = metadata.Name,
+                //Origin = metadata.Name,
+                Origin = "https://devnet.remarkable.tools/",
                 ExpirySeconds = 14400,
                 BlockHashShard = 2
             });
             var nativeAuthServerConfig = new NativeAuthServerConfig()
             {
-                AcceptedOrigins = new[] { metadata.Name }
+                AcceptedOrigins = new[] { "https://devnet.remarkable.tools/" }
             };
             _nativeAuthServer = new(nativeAuthServerConfig);
         }
@@ -164,16 +165,16 @@ namespace WinForms
 
                 await WalletConnect.Connect();
 
-                try
-                {
-                    var accessToken = NativeAuthClient.GetAccessToken(WalletConnect.Address, authToken, WalletConnect.Signature);
-                    _nativeAuthServer.Validate(accessToken);
-                }
-                catch
-                {
-                    await Disconnect();
-                    return;
-                }
+                //try
+                //{
+                //    var accessToken = NativeAuthClient.GetAccessToken(WalletConnect.Address, authToken, WalletConnect.Signature);
+                //    _nativeAuthServer.Validate(accessToken);
+                //}
+                //catch
+                //{
+                //    await Disconnect();
+                //    return;
+                //}
 
                 qrCodeImg.Visible = false;
                 btnConnect.Visible = false;

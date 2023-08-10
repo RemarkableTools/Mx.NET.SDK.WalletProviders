@@ -15,6 +15,7 @@ using System.IO;
 using WalletConnectSharp.Storage;
 using System.Linq;
 using Mx.NET.SDK.WalletConnect.Data;
+using Mx.NET.SDK.WalletConnect.Constants;
 
 namespace Mx.NET.SDK.WalletConnect
 {
@@ -63,11 +64,12 @@ namespace Mx.NET.SDK.WalletConnect
                         {
                             Methods = new[]
                             {
-                                "mvx_signTransaction",
-                                "mvx_signTransactions",
-                                "mvx_signMessage",
-                                "mvx_signLoginToken",
-                                "mvx_cancelAction"
+                                Operations.SIGN_TRANSACTION,
+                                Operations.SIGN_TRANSACTIONS,
+                                Operations.SIGN_MESSAGE,
+                                Operations.SIGN_LOGIN_TOKEN,
+                                Operations.SIGN_NATIVE_AUTH_TOKEN,
+                                Operations.CANCEL_ACTION
                             },
                             Chains = new[]
                             {
