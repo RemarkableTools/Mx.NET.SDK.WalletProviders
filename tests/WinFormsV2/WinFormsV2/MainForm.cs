@@ -1,6 +1,6 @@
 using Mx.NET.SDK.Configuration;
 using Mx.NET.SDK.Core.Domain;
-using Mx.NET.SDK.Domain.Data.Account;
+using Mx.NET.SDK.Domain.Data.Accounts;
 using Mx.NET.SDK.Domain.Data.Network;
 using Mx.NET.SDK.NativeAuthClient;
 using Mx.NET.SDK.NativeAuthClient.Entities;
@@ -28,7 +28,7 @@ namespace WinForms
         private readonly NativeAuthClient _nativeAuthToken = default!;
         private readonly NativeAuthServer _nativeAuthServer = default!;
 
-        readonly MultiversxProvider Provider = new(new MultiversxNetworkConfiguration(Network.DevNet));
+        readonly ApiProvider Provider = new(new ApiNetworkConfiguration(Network.DevNet));
         NetworkConfig NetworkConfig { get; set; } = default!;
         Account Account { get; set; } = default!;
 

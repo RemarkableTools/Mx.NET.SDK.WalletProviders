@@ -1,9 +1,7 @@
 ﻿using Mx.NET.SDK.Core.Domain;
 using Mx.NET.SDK.Domain;
-using Mx.NET.SDK.Provider.Dtos.API.Transactions;
-using System;
+using Mx.NET.SDK.Provider.Dtos.Common.Transactions;
 using System.Threading.Tasks;
-using WalletConnectSharp.Events.Model;
 
 namespace Mx.NET.SDK.WalletConnect
 {

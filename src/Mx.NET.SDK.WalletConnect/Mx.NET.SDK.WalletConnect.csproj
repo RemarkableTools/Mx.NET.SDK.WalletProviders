@@ -43,9 +43,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RemarkableTools.Mx" Version="1.0.17" />
-    <PackageReference Include="RemarkableTools.Mx.Core" Version="1.0.9" />
-    <PackageReference Include="RemarkableTools.Mx.Wallet" Version="1.0.2" />
+    <PackageReference Include="RemarkableTools.Mx" Version="2.0.4" />
+    <PackageReference Include="RemarkableTools.Mx.Core" Version="2.0.2" />
+    <PackageReference Include="RemarkableTools.Mx.Wallet" Version="2.0.1" />
     <PackageReference Include="WalletConnect.Sign" Version="3.0.0" />
   </ItemGroup>
 
