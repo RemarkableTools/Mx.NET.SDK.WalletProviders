@@ -16,7 +16,6 @@ using System.IO;
 using WalletConnectSharp.Storage;
 using System.Linq;
 using Mx.NET.SDK.WalletConnect.Data;
-using Mx.NET.SDK.WalletConnect.Constants;
 
 namespace Mx.NET.SDK.WalletConnect
 {
