@@ -10,6 +10,7 @@ using WalletConnectSharp.Common.Model.Errors;
 using WalletConnectSharp.Events;
 using WalletConnectSharp.Events.Model;
 using Mx.NET.SDK.WalletConnect.Models.Events;
+using static Mx.NET.SDK.WalletConnect.Constants.Operations;
 using static Mx.NET.SDK.WalletConnect.Constants.Events;
 using System.IO;
 using WalletConnectSharp.Storage;
@@ -64,12 +65,12 @@ namespace Mx.NET.SDK.WalletConnect
                         {
                             Methods = new[]
                             {
-                                Operations.SIGN_TRANSACTION,
-                                Operations.SIGN_TRANSACTIONS,
-                                Operations.SIGN_MESSAGE,
-                                Operations.SIGN_LOGIN_TOKEN,
-                                Operations.SIGN_NATIVE_AUTH_TOKEN,
-                                Operations.CANCEL_ACTION
+                                SIGN_TRANSACTION,
+                                SIGN_TRANSACTIONS,
+                                SIGN_MESSAGE,
+                                SIGN_LOGIN_TOKEN,
+                                SIGN_NATIVE_AUTH_TOKEN,
+                                CANCEL_ACTION
                             },
                             Chains = new[]
                             {
