@@ -4,8 +4,6 @@ using WalletConnectSharp.Sign.Models;
 using WalletConnectSharp.Sign;
 using WalletConnectSharp.Sign.Models.Engine;
 using Mx.NET.SDK.WalletConnect.Models;
-using WalletConnectSharp.Network.Models;
-using WalletConnectSharp.Core.Models.Pairing;
 using WalletConnectSharp.Common.Model.Errors;
 using WalletConnectSharp.Events;
 using WalletConnectSharp.Events.Model;
@@ -14,8 +12,9 @@ using static Mx.NET.SDK.WalletConnect.Constants.Operations;
 using static Mx.NET.SDK.WalletConnect.Constants.Events;
 using System.IO;
 using WalletConnectSharp.Storage;
-using System.Linq;
 using Mx.NET.SDK.WalletConnect.Data;
+using WalletConnectSharp.Core;
+using WalletConnectSharp.Network.Models;
 
 namespace Mx.NET.SDK.WalletConnect
 {
@@ -60,7 +59,7 @@ namespace Mx.NET.SDK.WalletConnect
                 RequiredNamespaces = new RequiredNamespaces()
                 {
                     {
-                        WALLETCONNECT_MULTIVERSX_NAMESPACE, new RequiredNamespace()
+                        WALLETCONNECT_MULTIVERSX_NAMESPACE, new ProposedNamespace()
                         {
                             Methods = new[]
                             {
@@ -152,7 +151,7 @@ namespace Mx.NET.SDK.WalletConnect
 
         public async Task Disconnect()
         {
-            await _client.Disconnect(_walletConnectSession.Topic, ErrorResponse.FromErrorType(ErrorType.USER_DISCONNECTED));
+            await _client.Disconnect(_walletConnectSession.Topic, Error.FromErrorType(ErrorType.USER_DISCONNECTED));
             Address = string.Empty;
             Signature = string.Empty;
         }
@@ -164,18 +163,18 @@ namespace Mx.NET.SDK.WalletConnect
             return response.Signature;
         }
 
-        public async Task<string> Sign(RequestData requestData)
+        public async Task<ResponseData> Sign(RequestData requestData)
         {
             var request = new SignTransactionRequest() { Transaction = requestData };
             var response = await _client.Request<SignTransactionRequest, SignTransactionResponse>(_walletConnectSession.Topic, request);
-            return response.Signature;
+            return response.Response;
         }
 
-        public async Task<string[]> MultiSign(RequestData[] requestsData)
+        public async Task<ResponseData[]> MultiSign(RequestData[] requestsData)
         {
             var request = new SignTransactionsRequest() { Transactions = requestsData };
             var response = await _client.Request<SignTransactionsRequest, SignTransactionsResponse>(_walletConnectSession.Topic, request);
-            return response.Signatures.Select(s => s.Signature).ToArray();
+            return response.Signatures;
         }
 
         public event EventHandler<GenericEvent<SessionUpdateEvent>> OnSessionUpdateEvent;

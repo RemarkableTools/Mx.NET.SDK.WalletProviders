@@ -14,6 +14,6 @@ namespace Mx.NET.SDK.WalletConnect.Models
 
     public class SignTransactionResponse
     {
-        public string Signature { get; set; }
+        public ResponseData Response { get; set; }
     }
 }

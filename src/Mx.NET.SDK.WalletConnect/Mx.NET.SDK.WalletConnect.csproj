@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/RemarkableTools/Mx.NET.SDK.WalletProviders/tree/main/src/Mx.NET.SDK.WalletConnect</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <Company>Remarkable Tools</Company>
-    <Version>2.0.0-beta.5</Version>
+    <Version>2.1.0-beta.1</Version>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <RootNamespace>$(MSBuildProjectName.Replace("-", ""))</RootNamespace>
     <Title>RemarkableTools.Mx.WalletConnect</Title>
@@ -43,10 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RemarkableTools.Mx" Version="2.0.4" />
-    <PackageReference Include="RemarkableTools.Mx.Core" Version="2.0.2" />
+    <PackageReference Include="RemarkableTools.Mx" Version="2.0.13" />
+    <PackageReference Include="RemarkableTools.Mx.Core" Version="2.0.3" />
     <PackageReference Include="RemarkableTools.Mx.Wallet" Version="2.0.1" />
-    <PackageReference Include="WalletConnect.Sign" Version="2.1.3" />
+    <PackageReference Include="WalletConnect.Sign" Version="2.1.0" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">

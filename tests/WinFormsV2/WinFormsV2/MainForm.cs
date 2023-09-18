@@ -12,7 +12,7 @@ using Mx.NET.SDK.WalletConnect;
 using Mx.NET.SDK.WalletConnect.Models.Events;
 using QRCoder;
 using System.Diagnostics;
-using WalletConnectSharp.Core.Models.Pairing;
+using WalletConnectSharp.Core;
 using WalletConnectSharp.Events.Model;
 using Address = Mx.NET.SDK.Core.Domain.Values.Address;
 
@@ -165,16 +165,16 @@ namespace WinForms
 
                 await WalletConnect.Connect();
 
-                //try
-                //{
-                //    var accessToken = NativeAuthClient.GetAccessToken(WalletConnect.Address, authToken, WalletConnect.Signature);
-                //    _nativeAuthServer.Validate(accessToken);
-                //}
-                //catch
-                //{
-                //    await Disconnect();
-                //    return;
-                //}
+                try
+                {
+                    var accessToken = NativeAuthClient.GetAccessToken(WalletConnect.Address, authToken, WalletConnect.Signature);
+                    _nativeAuthServer.Validate(accessToken);
+                }
+                catch
+                {
+                    await Disconnect();
+                    return;
+                }
 
                 qrCodeImg.Visible = false;
                 btnConnect.Visible = false;
