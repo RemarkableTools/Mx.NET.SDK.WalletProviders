@@ -20,7 +20,7 @@ namespace Mx.NET.SDK.WalletConnect.Helper
                 value = transaction.Value.ToString(),
                 version = transaction.Version,
                 options = transaction.Options,
-                guardian = transaction.Guardian.Bech32,
+                guardian = transaction.Guardian?.Bech32,
                 guardianSignature = null
             };
         }
@@ -39,7 +39,7 @@ namespace Mx.NET.SDK.WalletConnect.Helper
                 value = transaction.Value.ToString(),
                 version = transaction.Version,
                 options = transaction.Options,
-                guardian = transaction.Guardian.Bech32,
+                guardian = transaction.Guardian?.Bech32,
                 guardianSignature = null
             }).ToArray();
         }

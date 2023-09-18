@@ -167,7 +167,14 @@ namespace Mx.NET.SDK.WalletConnect
         {
             var request = new SignTransactionRequest() { Transaction = requestData };
             var response = await _client.Request<SignTransactionRequest, SignTransactionResponse>(_walletConnectSession.Topic, request);
-            return response.Response;
+            return new ResponseData()
+            {
+                Signature = response.Signature,
+                Version = response.Version,
+                Options = response.Options,
+                Guardian = response.Guardian,
+                GuardianSignature = response.GuardianSignature
+            };
         }
 
         public async Task<ResponseData[]> MultiSign(RequestData[] requestsData)
