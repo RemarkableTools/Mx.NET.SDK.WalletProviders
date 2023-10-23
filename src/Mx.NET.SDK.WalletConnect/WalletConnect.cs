@@ -1,101 +1,63 @@
-﻿using System;
+﻿using Mx.NET.SDK.Core.Domain;
+using Mx.NET.SDK.Domain;
 using System.Collections.Generic;
 using System.Threading.Tasks;
-using WalletConnectSharp.Core;
-using WalletConnectSharp.Core.Models;
-using WcWalletConnect = WalletConnectSharp.Desktop.WalletConnect;
-using Mx.NET.SDK.WalletConnect.Data;
+using System;
+using Mx.NET.SDK.Wallet;
 using Mx.NET.SDK.WalletConnect.Helper;
-using Mx.NET.SDK.Provider.Dtos.API.Transactions;
-using Mx.NET.SDK.Domain;
+using Mx.NET.SDK.Provider.Dtos.Common.Transactions;
+using WalletConnectSharp.Core;
 
 namespace Mx.NET.SDK.WalletConnect
 {
-    public class WalletConnect : IWalletConnect
+    public class WalletConnect : WalletConnectGeneric, IWalletConnect
     {
-        public const int WALLET_CONNECT_MULTIVERSX_CHAIN_ID = 508;
+        public WalletConnect(Metadata metadata, string projectID, string chainID, string filePath = null)
+            : base(metadata, projectID, chainID, filePath) { }
 
-        public const string BRIDGE_URL = "https://bridge.walletconnect.org";
-        public const string MAIAR_BRIDGE_URL = "https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=https://maiar.com/";
-
-        public string Address { get; set; }
-        public string URI { get => _walletConnect.URI ?? ""; }
-        public Uri WalletConnectUri { get => new($"{MAIAR_BRIDGE_URL}?wallet-connect={Uri.EscapeDataString(URI)}"); }
-
-        private WcWalletConnect _walletConnect;
-
-        public event EventHandler<WalletConnectSession> OnSessionConnected;
-        public event EventHandler OnSessionDisconnected;
-
-        public WalletConnect(ClientMeta clientMeta, string bridgeUrl = BRIDGE_URL)
+        public new async Task<SignableMessage> SignMessage(string message)
         {
-            _walletConnect = new WcWalletConnect(clientMeta, bridgeUrl, null, null, WALLET_CONNECT_MULTIVERSX_CHAIN_ID);
-            _walletConnect.OnSessionConnect += OnSessionConnectEvent;
-            _walletConnect.OnSessionDisconnect += OnSessionDisconnectEvent;
-        }
+            var signature = await base.SignMessage(message);
+            var signableMessage = new SignableMessage()
+            {
+                Address = Core.Domain.Values.Address.FromBech32(Address),
+                Message = message,
+                Signature = signature
+            };
 
-        public void OnSessionConnectEvent(object sender, WalletConnectSession session)
-        {
-            OnSessionConnected?.Invoke(this, session);
-        }
-
-        public void OnSessionDisconnectEvent(object sender, EventArgs e)
-        {
-            OnSessionDisconnected?.Invoke(this, EventArgs.Empty);
-        }
-
-        public bool IsConnected()
-        {
-            return !string.IsNullOrEmpty(Address);
-        }
-
-        public async Task Connect()
-        {
-            await _walletConnect.Connect();
-            Address = _walletConnect.Accounts[0];
-        }
-
-        public async Task Disconnect()
-        {
-            await _walletConnect.Disconnect();
-            Address = null;
+            var isValid = signableMessage.VerifyMessage();
+            if (!isValid)
+                throw new Exception("Message signature is invalid");
+            else
+                return signableMessage;
         }
 
         public async Task<TransactionRequestDto> Sign(TransactionRequest transactionRequest)
         {
-            var request = new WcRequest(transactionRequest.GetRequestData());
+            var requestData = transactionRequest.GetSignTransactionRequest();
+            var response = await Sign(requestData);
 
-            try
-            {
-                var response = await _walletConnect.Send<WcRequest, WcResponse>(request);
-                var transaction = transactionRequest.GetTransactionRequest();
-                transaction.Signature = response.Result.Signature;
-                return transaction;
-            }
-            catch (WalletException) { throw; }
-            catch (Exception) { throw; }
+            var transaction = transactionRequest.GetTransactionRequest();
+            transaction.Signature = response.Signature;
+            transaction.GuardianSignature = response.GuardianSignature;
+            return transaction;
         }
 
         public async Task<TransactionRequestDto[]> MultiSign(TransactionRequest[] transactionsRequest)
         {
-            var requests = new WcMultiRequest(transactionsRequest.GetRequestsData());
+            var requestsData = transactionsRequest.GetSignTransactionsRequest();
+            var responses = await MultiSign(requestsData);
 
-            try
+            var transactions = new List<TransactionRequestDto>();
+            for (var i = 0; i < responses.Length; i++)
             {
-                var response = await _walletConnect.Send<WcMultiRequest, WcMultiResponse>(requests);
-
-                var transactions = new List<TransactionRequestDto>();
-                for (var i = 0; i < response.Result.Length; i++)
-                {
-                    var transactionRequestDto = transactionsRequest[i].GetTransactionRequest();
-                    transactionRequestDto.Signature = response.Result[i].Signature;
-                    transactions.Add(transactionRequestDto);
-                }
-
-                return transactions.ToArray();
+                var transactionRequestDto = transactionsRequest[i].GetTransactionRequest();
+                transactionRequestDto.Signature = responses[i].Signature;
+                transactionRequestDto.GuardianSignature = responses[i].GuardianSignature;
+                transactions.Add(transactionRequestDto);
             }
-            catch (WalletException) { throw; }
-            catch (Exception) { throw; }
+
+            return transactions.ToArray();
         }
     }
 }

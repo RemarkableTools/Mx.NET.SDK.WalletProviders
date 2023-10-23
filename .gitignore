@@ -364,3 +364,5 @@ FodyWeavers.xsd
 
 # other
 desktop.ini
+libs
+tests

@@ -52,6 +52,6 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RemarkableTools.Mx" Version="2.0.4" />
+    <PackageReference Include="RemarkableTools.Mx" Version="2.0.13" />
   </ItemGroup>
 </Project>
