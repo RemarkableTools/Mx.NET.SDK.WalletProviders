@@ -12,7 +12,7 @@ The content is delivered via nuget package:
 ### Quick start guide
 1. Define the network provider which can be MainNet/DevNet/TestNet
 ```csharp
-var provider = new ApiProvider(new ApiNetworkConfiguration(Network.DevNet));
+IApiProvider provider = new ApiProvider(new ApiNetworkConfiguration(Network.DevNet));
 ```
 
 2. Define the Web Wallet

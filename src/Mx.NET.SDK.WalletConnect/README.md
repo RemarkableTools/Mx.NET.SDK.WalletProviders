@@ -14,7 +14,7 @@ The content is delivered via nuget package:
 
 1. Variables init
 ```csharp
-ApiProvider Provider = new ApiProvider(new ApiNetworkConfiguration(Network.DevNet));
+IApiProvider Provider = new ApiProvider(new ApiNetworkConfiguration(Network.DevNet));
 NetworkConfig NetworkConfig { get; set; } = default!;
 Account Account { get; set; } = default!;
 ```
