@@ -10,7 +10,7 @@
     <RepositoryUrl>https://github.com/RemarkableTools/Mx.NET.SDK.WalletProviders/tree/main/src/Mx.NET.SDK.WebWallet</RepositoryUrl>
     <RepositoryType>GitHub</RepositoryType>
     <Company>Remarkable Tools</Company>
-    <Version>1.1.0</Version>
+    <Version>1.1.1</Version>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
     <PackageLicenseFile>LICENSE.txt</PackageLicenseFile>
     <RootNamespace>$(MSBuildProjectName.Replace("-", ""))</RootNamespace>
