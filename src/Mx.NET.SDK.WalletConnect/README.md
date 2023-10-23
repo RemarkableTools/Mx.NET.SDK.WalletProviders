@@ -64,7 +64,7 @@ catch (Exception ex)
 }
 ```
 
-4. Initialize WalletConnect connection
+4. If you don't have a connection saved, continue with WalletConnect connection initialization
 ```csharp
 await WalletConnect.Initialize();
 ```
@@ -102,6 +102,9 @@ private void OnSessionEvent(object? sender, GenericEvent<SessionEvent> @event)
 private void OnSessionDeleteEvent(object? sender, EventArgs e)
 {
     //Wallet Disconnected
+
+    NetworkConfig = default!;
+    Account = default!;
 }
 
 private void OnTopicUpdateEvent(object? sender, GenericEvent<TopicUpdateEvent> @event)
@@ -120,12 +123,11 @@ await WalletConnect.Disconnect(); //this will also trigger OnSessionDeleteEvent
 await Account.Sync(Provider); //always sync account first (to have the latest nonce)
 var receiver = "RECEIVER_ADDRESS";
 
-var transaction = EGLDTransactionRequest.EGLDTransfer(
-                  NetworkConfig,
-                  Account,
-                  Address.FromBech32(receiver),
-                  ESDTAmount.EGLD("1.5"),
-                  $"hello");
+var transaction = EGLDTransactionRequest.EGLDTransfer(NetworkConfig,
+                                                      Account,
+                                                      Address.FromBech32(receiver),
+                                                      ESDTAmount.EGLD("1.5"),
+                                                      $"hello");
 
 try
 {
@@ -182,4 +184,4 @@ catch (Exception ex)
 ```
 
 ## Basic usage example
-A Windows application example can be found [here](https://github.com/RemarkableTools/Mx.NET.SDK.WalletProviders/tree/dev/tests/WinFormsV2).
+A Windows application example can be found [here](https://github.com/RemarkableTools/Mx.NET.Examples/tree/main/examples/WinForms).
