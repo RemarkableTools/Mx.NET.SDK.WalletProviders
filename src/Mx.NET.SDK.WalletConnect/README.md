@@ -40,11 +40,8 @@ IWalletConnect WalletConnect = new WalletConnect(metadata, PROJECT_ID, CHAIN_ID)
 3. At start-up, you should check for old connection and setup the events
 ```csharp
 await WalletConnect.ClientInit();
-WalletConnect.OnSessionUpdateEvent += OnSessionUpdateEvent;
 WalletConnect.OnSessionEvent += OnSessionEvent;
 WalletConnect.OnSessionDeleteEvent += OnSessionDeleteEvent;
-WalletConnect.OnSessionExpireEvent += OnSessionDeleteEvent;
-WalletConnect.OnTopicUpdateEvent += OnTopicUpdateEvent;
 
 try
 {
@@ -89,27 +86,12 @@ catch (Exception ex)
 
 7. Session Events
 ```csharp
-private void OnSessionUpdateEvent(object? sender, GenericEvent<SessionUpdateEvent> @event)
-{
-    //Wallet connected
-}
-
-private void OnSessionEvent(object? sender, GenericEvent<SessionEvent> @event)
-{
-    //Session event
-}
-
-private void OnSessionDeleteEvent(object? sender, EventArgs e)
+private void OnSessionDeleteEvent(object? sender, SessionEvent e)
 {
     //Wallet Disconnected
 
     NetworkConfig = default!;
     Account = default!;
-}
-
-private void OnTopicUpdateEvent(object? sender, GenericEvent<TopicUpdateEvent> @event)
-{
-    //Topic Update
 }
 ```
 
