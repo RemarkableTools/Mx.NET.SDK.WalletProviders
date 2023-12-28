@@ -5,16 +5,13 @@ using WalletConnectSharp.Sign;
 using WalletConnectSharp.Sign.Models.Engine;
 using Mx.NET.SDK.WalletConnect.Models;
 using WalletConnectSharp.Common.Model.Errors;
-using WalletConnectSharp.Events;
-using WalletConnectSharp.Events.Model;
-using Mx.NET.SDK.WalletConnect.Models.Events;
 using static Mx.NET.SDK.WalletConnect.Constants.Operations;
-using static Mx.NET.SDK.WalletConnect.Constants.Events;
 using System.IO;
 using WalletConnectSharp.Storage;
 using Mx.NET.SDK.WalletConnect.Data;
-using WalletConnectSharp.Core;
 using WalletConnectSharp.Network.Models;
+using WalletConnectSharp.Core;
+using WalletConnectSharp.Sign.Models.Engine.Events;
 
 namespace Mx.NET.SDK.WalletConnect
 {
@@ -184,47 +181,23 @@ namespace Mx.NET.SDK.WalletConnect
             return response.Signatures;
         }
 
-        public event EventHandler<GenericEvent<SessionUpdateEvent>> OnSessionUpdateEvent;
-        public event EventHandler<GenericEvent<SessionEvent>> OnSessionEvent;
-        public event EventHandler OnSessionDeleteEvent;
-        public event EventHandler OnSessionExpireEvent;
-        public event EventHandler<GenericEvent<TopicUpdateEvent>> OnTopicUpdateEvent;
+        public event EventHandler<SessionEvent> OnSessionDeleteEvent;
+        public event EventHandler<SessionStruct> OnSessionExpireEvent;
 
         private void SubscribeToEvents()
         {
-            _client.On(SESSION_UPDATE, delegate (object sender, GenericEvent<SessionUpdateEvent> @event)
-            {
-                OnSessionUpdateEvent?.Invoke(sender, @event);
-            });
-
-            _client.On(SESSION_EVENT, delegate (object sender, GenericEvent<SessionEvent> @event)
-            {
-                OnSessionEvent?.Invoke(sender, @event);
-            });
-
-            _client.On(SESSION_DELETE, delegate ()
+            _client.SessionDeleted += (sender, @event) =>
             {
                 Address = string.Empty;
                 Signature = string.Empty;
-                OnSessionDeleteEvent?.Invoke(this, EventArgs.Empty);
-            });
-
-            _client.On(SESSION_EXPIRE, delegate ()
+                OnSessionDeleteEvent?.Invoke(sender, @event);
+            };
+            _client.SessionExpired += (sender, @event) =>
             {
                 Address = string.Empty;
                 Signature = string.Empty;
-                OnSessionExpireEvent?.Invoke(this, EventArgs.Empty);
-            });
-
-            _client.Core.Pairing.On(PAIRING_DELETE, delegate (object sender, GenericEvent<TopicUpdateEvent> @event)
-            {
-                OnTopicUpdateEvent?.Invoke(sender, @event);
-            });
-
-            _client.Core.Pairing.On(PAIRING_EXPIRE, delegate (object sender, GenericEvent<TopicUpdateEvent> @event)
-            {
-                OnTopicUpdateEvent?.Invoke(sender, @event);
-            });
+                OnSessionExpireEvent?.Invoke(sender, @event);
+            };
         }
     }
 }

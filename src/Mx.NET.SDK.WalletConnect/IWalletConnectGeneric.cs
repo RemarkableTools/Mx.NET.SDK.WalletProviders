@@ -1,8 +1,8 @@
 ﻿using Mx.NET.SDK.WalletConnect.Data;
-using Mx.NET.SDK.WalletConnect.Models.Events;
 using System;
 using System.Threading.Tasks;
-using WalletConnectSharp.Events.Model;
+using WalletConnectSharp.Sign.Models;
+using WalletConnectSharp.Sign.Models.Engine.Events;
 
 namespace Mx.NET.SDK.WalletConnect
 {
@@ -13,11 +13,8 @@ namespace Mx.NET.SDK.WalletConnect
         string Signature { get; }
         Uri WalletConnectUri { get; }
 
-        event EventHandler<GenericEvent<SessionUpdateEvent>> OnSessionUpdateEvent;
-        event EventHandler<GenericEvent<SessionEvent>> OnSessionEvent;
-        event EventHandler OnSessionDeleteEvent;
-        event EventHandler OnSessionExpireEvent;
-        event EventHandler<GenericEvent<TopicUpdateEvent>> OnTopicUpdateEvent;
+        event EventHandler<SessionEvent> OnSessionDeleteEvent;
+        event EventHandler<SessionStruct> OnSessionExpireEvent;
 
         /// <summary>
         /// Initilize the client and subscribe to events, if not already initialized

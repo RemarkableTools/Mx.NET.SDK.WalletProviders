@@ -43,10 +43,10 @@
   </ItemGroup>
 
   <ItemGroup>
-    <PackageReference Include="RemarkableTools.Mx" Version="2.0.13" />
-    <PackageReference Include="RemarkableTools.Mx.Core" Version="2.0.3" />
+    <PackageReference Include="RemarkableTools.Mx" Version="2.0.15" />
+    <PackageReference Include="RemarkableTools.Mx.Core" Version="2.0.4" />
     <PackageReference Include="RemarkableTools.Mx.Wallet" Version="2.0.1" />
-    <PackageReference Include="WalletConnect.Sign" Version="2.1.2" />
+    <PackageReference Include="WalletConnect.Sign" Version="2.1.7" />
   </ItemGroup>
 
   <ItemGroup Condition=" '$(TargetFramework)' == 'net461' ">
