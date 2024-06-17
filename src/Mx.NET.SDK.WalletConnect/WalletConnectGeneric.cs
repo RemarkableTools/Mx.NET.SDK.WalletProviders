@@ -21,7 +21,7 @@ namespace Mx.NET.SDK.WalletConnect
         public const string WALLETCONNECT_MULTIVERSX_NAMESPACE = "mvx";
 
         public const string RELAY_URL = "https://bridge.walletconnect.org";
-        public const string MAIAR_BRIDGE_URL = "https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=https://maiar.com/";
+        public const string MAIAR_BRIDGE_URL = "https://maiar.page.link/?apn=com.elrond.maiar.wallet&isi=1519405832&ibi=com.elrond.maiar.wallet&link=https://xportal.com/";
 
         private readonly SignClientOptions _dappOptions = default!;
         private readonly ConnectOptions _dappConnectOptions = default!;
@@ -45,6 +45,7 @@ namespace Mx.NET.SDK.WalletConnect
 
             _dappOptions = new SignClientOptions()
             {
+                Name = metadata.Name,
                 ProjectId = projectID,
                 Metadata = metadata,
                 Storage = new FileSystemStorage(dappFilePath)
@@ -144,6 +145,7 @@ namespace Mx.NET.SDK.WalletConnect
                 var parameters = currentSession.Split(':');
                 Address = parameters[2];
             }
+            _client.AddressProvider.LoadDefaultsAsync();
         }
 
         public async Task Disconnect()
