@@ -25,7 +25,7 @@ var metadata = new Metadata()
 {
     Name = "Mx.NET.WinForms",
     Description = "Mx.NET.WinForms login testing",
-    Icons = new[] { "https://devnet.remarkable.tools/remarkabletools.ico" },
+    Icons = new string[] { "https://devnet.remarkable.tools/remarkabletools.ico" },
     Url = "https://devnet.remarkable.tools/"
 };
 ```
@@ -128,28 +128,25 @@ catch (Exception ex)
 await Account.Sync(Provider); //always sync account first (to have the latest nonce)
 var receiver = "RECEIVER_ADDRESS";
 
-var transaction1 = EGLDTransactionRequest.EGLDTransfer(
-    NetworkConfig,
-    Account,
-    Address.FromBech32(receiver),
-    ESDTAmount.EGLD("0.1"),
-    "tx 1");
+var transaction1 = EGLDTransactionRequest.EGLDTransfer(NetworkConfig,
+                                                       Account,
+                                                       Address.FromBech32(receiver),
+                                                       ESDTAmount.EGLD("0.1"),
+                                                       "tx 1");
 Account.IncrementNonce();
 
-var transaction2 = EGLDTransactionRequest.EGLDTransfer(
-    NetworkConfig,
-    Account,
-    Address.FromBech32(receiver),
-    ESDTAmount.EGLD("0.2"),
-    "tx 2");
+var transaction2 = EGLDTransactionRequest.EGLDTransfer(NetworkConfig,
+                                                       Account,
+                                                       Address.FromBech32(receiver),
+                                                       ESDTAmount.EGLD("0.2"),
+                                                       "tx 2");
 Account.IncrementNonce();
 
-var transaction3 = EGLDTransactionRequest.EGLDTransfer(
-    NetworkConfig,
-    Account,
-    Address.FromBech32(receiver),
-    ESDTAmount.EGLD("0.3"),
-    "tx 3");
+var transaction3 = EGLDTransactionRequest.EGLDTransfer(NetworkConfig,
+                                                       Account,
+                                                       Address.FromBech32(receiver),
+                                                       ESDTAmount.EGLD("0.3"),
+                                                       "tx 3");
 Account.IncrementNonce();
 
 var transactions = new[] { transaction1, transaction2, transaction3 };
